@@ -57,6 +57,39 @@ struct ChartSeriesBuilderTests {
         #expect(ChartSeriesBuilder.yDomain([]) == 0...100)
     }
 
+    @Test func fullResolutionSampleLookup() {
+        let samples = cook(samples: 10).series[meat]!
+        #expect(ChartSeriesBuilder.sample(at: t0.addingTimeInterval(-1), in: samples) == nil)
+        #expect(ChartSeriesBuilder.sample(at: t0.addingTimeInterval(29), in: samples) == samples[1])
+    }
+
+    static let strideCases: [(visibleMinutes: Int, strideMinutes: Int)] = [(20, 5), (120, 30), (600, 120), (6000, 720)]
+
+    @Test(arguments: strideCases)
+    func tickStrideGivesFewLabels(_ testCase: (visibleMinutes: Int, strideMinutes: Int)) {
+        let stride = ChartSeriesBuilder.tickStride(visibleLength: TimeInterval(testCase.visibleMinutes * 60))
+        #expect(stride == TimeInterval(testCase.strideMinutes * 60))
+    }
+
+    @Test func clockTicksAlignToRoundTimes() throws {
+        var calendar = Calendar(identifier: .gregorian)
+        calendar.timeZone = TimeZone(identifier: "UTC")!
+        let start = Date(timeIntervalSince1970: 1_800_000_000 + 7 * 60) // 08:07 UTC
+        let ticks = ChartSeriesBuilder.axisTicks(from: start, to: start.addingTimeInterval(3600), visibleLength: 30 * 60,
+                                                 alignedToStart: false, calendar: calendar)
+        let first = try #require(ticks.first)
+        #expect(Int(first.timeIntervalSince1970) % 300 == 0)
+        #expect(first >= start && first.timeIntervalSince(start) < 300)
+        #expect(zip(ticks, ticks.dropFirst()).allSatisfy { $1.timeIntervalSince($0) == 300 })
+    }
+
+    @Test func elapsedTicksAlignToStart() {
+        let ticks = ChartSeriesBuilder.axisTicks(from: t0, to: t0.addingTimeInterval(7200), visibleLength: 7200, alignedToStart: true)
+        #expect(ticks.first == t0)
+        #expect(ticks.count == 5) // 0, 30, 60, 90, 120 min
+        #expect(ChartSeriesBuilder.axisTicks(from: t0, to: t0, visibleLength: 600, alignedToStart: true).isEmpty)
+    }
+
     @Test func visibleLengthIsClamped() {
         #expect(ChartSeriesBuilder.clampVisibleLength(60, cookDuration: 3600) == 600)
         #expect(ChartSeriesBuilder.clampVisibleLength(99_999, cookDuration: 3600) == 3600)
@@ -88,6 +121,29 @@ struct LiveActivityStateTests {
         #expect(state.eta == eta)
         #expect(state.status == nil)
         #expect(state.unit == "F")
+        #expect(state.updatedAt == t0.addingTimeInterval(60))
+    }
+
+    @Test func freshnessComesFromNewestReadingAcrossChannels() {
+        var snap = snapshot(Estimate(state: .estimating, eta: t0.addingTimeInterval(3600)))
+        let pit = ChannelKey(deviceSerial: "RFX", channel: "2")
+        snap.cook.probes.append(CookProbe(key: pit, label: "Pit", role: .ambient))
+        snap.cook.append(Sample(time: t0.addingTimeInterval(90), celsius: 120), to: pit)
+        let state = CookActivityAttributes.ContentState(snapshot: snap, unit: .fahrenheit)
+        #expect(state.updatedAt == t0.addingTimeInterval(90))
+        #expect(!state.isDataStale)
+
+        snap.staleChannels = Set(snap.cook.probes.map(\.key))
+        #expect(CookActivityAttributes.ContentState(snapshot: snap, unit: .fahrenheit).isDataStale)
+    }
+
+    @Test func wallClockMappingAppliesToTimes() {
+        let eta = t0.addingTimeInterval(3600)
+        let state = CookActivityAttributes.ContentState(
+            snapshot: snapshot(Estimate(state: .estimating, eta: eta)), unit: .fahrenheit,
+            wallClock: { $0.addingTimeInterval(-1000) })
+        #expect(state.eta == eta.addingTimeInterval(-1000))
+        #expect(state.updatedAt == t0.addingTimeInterval(-940))
     }
 
     @Test(arguments: [(EstimateState.stalled, "Stall"), (.warmingUp, "Calculating…"), (.reached, "Done")])
@@ -111,6 +167,13 @@ struct FormattingTests {
         #expect(Formatting.duration(8 * 60 + 5) == "8m")
         #expect(Formatting.duration(72 * 60) == "1h 12m")
         #expect(Formatting.duration(-5) == "0s")
+    }
+
+    @Test func elapsedAxisLabels() {
+        #expect(Formatting.elapsedAxis(0) == "0m")
+        #expect(Formatting.elapsedAxis(45 * 60) == "45m")
+        #expect(Formatting.elapsedAxis(2 * 3600) == "2h")
+        #expect(Formatting.elapsedAxis(2 * 3600 + 30 * 60) == "2h30")
     }
 
     @Test func rates() {

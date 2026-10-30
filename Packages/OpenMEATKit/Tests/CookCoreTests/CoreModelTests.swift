@@ -88,5 +88,6 @@ struct TimeSourceTests {
         let scaled = ScaledTimeSource(anchor: base.now, scale: 600, base: base)
         base.advance(by: 6)
         #expect(scaled.now == Date(timeIntervalSince1970: 3600))
+        #expect(scaled.wallClock(for: Date(timeIntervalSince1970: 7200)) == Date(timeIntervalSince1970: 12))
     }
 }

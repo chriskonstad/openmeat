@@ -24,6 +24,16 @@ public struct SessionSnapshot: Sendable, Equatable {
 
     public func estimate(_ key: ChannelKey) -> Estimate? { estimates[key] }
 
+    /// Time of the newest reading from any channel — "how fresh is what I'm looking at".
+    public var latestReadingTime: Date? {
+        cook.probes.compactMap { cook.series[$0.key]?.last?.time }.max()
+    }
+
+    /// True when no channel has reported recently (gateway offline, app was suspended, network down).
+    public var isStale: Bool {
+        !cook.probes.isEmpty && cook.probes.allSatisfy { staleChannels.contains($0.key) }
+    }
+
     /// The probe to feature (Live Activity, compact UI): soonest ETA, else first targeted, else first internal.
     public var primaryProbe: CookProbe? {
         let internals = cook.probes.filter { $0.role == .internal }
@@ -80,13 +90,7 @@ public actor LiveCookSession {
         self.options = options
         self.makeEstimator = makeEstimator
         // Resuming a cook (e.g. after relaunch): rebuild estimator state from recorded samples.
-        for probe in cook.probes where probe.role == .internal {
-            var estimator = makeEstimator()
-            for sample in cook.series[probe.key] ?? [] {
-                estimator.ingest(Self.input(for: sample, ambientKey: probe.pairedAmbient, in: cook, maxAge: options.ambientMaxAge))
-            }
-            estimators[probe.key] = estimator
-        }
+        estimators = Self.estimators(for: cook, make: makeEstimator, ambientMaxAge: options.ambientMaxAge)
         for (key, samples) in cook.series {
             lastTelemetry[key] = samples.last?.time
         }
@@ -188,6 +192,22 @@ public actor LiveCookSession {
         }
     }
 
+    private static func estimators(for cook: Cook, make: EstimatorFactory, ambientMaxAge: TimeInterval) -> [ChannelKey: any DoneTimeEstimator] {
+        var result: [ChannelKey: any DoneTimeEstimator] = [:]
+        for probe in cook.probes where probe.role == .internal {
+            var estimator = make()
+            for sample in cook.series[probe.key] ?? [] {
+                estimator.ingest(input(for: sample, ambientKey: probe.pairedAmbient, in: cook, maxAge: ambientMaxAge))
+            }
+            result[probe.key] = estimator
+        }
+        return result
+    }
+
+    private func rebuildEstimators() {
+        estimators = Self.estimators(for: cook, make: makeEstimator, ambientMaxAge: options.ambientMaxAge)
+    }
+
     private static func input(for sample: Sample, ambientKey: ChannelKey?, in cook: Cook, maxAge: TimeInterval) -> EstimatorInput {
         // Most recent ambient reading at or before the probe reading.
         let ambient = ambientKey.flatMap { key in
@@ -205,9 +225,22 @@ public actor LiveCookSession {
         publish()
     }
 
+    /// Changes a channel's role mid-cook and re-pairs ambients. Existing series keep their colors.
     public func setRole(_ role: ProbeRole, for key: ChannelKey) {
-        guard let index = cook.probes.firstIndex(where: { $0.key == key }) else { return }
+        guard let index = cook.probes.firstIndex(where: { $0.key == key }), cook.probes[index].role != role else { return }
+        let previous = cook.probes
         cook.probes[index].role = role
+        if role != .internal { cook.probes[index].target = nil }
+        cook.probes = ProbeDiscovery.pairAndColor(cook.probes, preservingColorsOf: previous)
+        rebuildEstimators()
+        persistSoon()
+        publish()
+    }
+
+    public func setLabel(_ label: String, for key: ChannelKey) {
+        let trimmed = label.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !trimmed.isEmpty, let index = cook.probes.firstIndex(where: { $0.key == key }) else { return }
+        cook.probes[index].label = trimmed
         persistSoon()
         publish()
     }

@@ -46,4 +46,10 @@ public struct ScaledTimeSource: TimeSource {
     public var now: Date {
         anchor.addingTimeInterval(base.now.timeIntervalSince(anchor) * scale)
     }
+
+    /// The real (wall-clock) moment at which this source reads `date` — for UI that runs on the
+    /// system clock, like Live Activity timers.
+    public func wallClock(for date: Date) -> Date {
+        anchor.addingTimeInterval(date.timeIntervalSince(anchor) / scale)
+    }
 }

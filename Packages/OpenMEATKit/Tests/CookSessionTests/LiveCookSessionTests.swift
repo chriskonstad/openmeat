@@ -76,9 +76,22 @@ struct LiveCookSessionTests {
     @Test func droppedOutProbeBecomesStale() async throws {
         let (session, clock, _) = try await makeSession(.probeDisconnects)
         clock.advance(by: 2 * 3600 - 60)
-        #expect(await session.pollOnce().staleChannels.isEmpty)
+        let fresh = await session.pollOnce()
+        #expect(fresh.staleChannels.isEmpty)
+        #expect(!fresh.isStale)
         clock.advance(by: 600)
-        #expect(await session.pollOnce().staleChannels.count == 2)
+        let stale = await session.pollOnce()
+        #expect(stale.staleChannels.count == 2)
+        #expect(stale.isStale)
+        // The last packet was at the 2 h dropout, not "now".
+        #expect(stale.latestReadingTime == t0.addingTimeInterval(2 * 3600))
+    }
+
+    @Test func latestReadingTimeBeforeAnyData() async throws {
+        let (session, _, _) = try await makeSession()
+        let snap = await session.snapshot()
+        #expect(snap.latestReadingTime == nil)
+        #expect(!snap.isStale)
     }
 
     @Test func notesAndTargetsUpdateSnapshot() async throws {
@@ -160,5 +173,73 @@ struct ChannelRoleClassifierTests {
         #expect(ChannelRoleClassifier.role(of: channel(label: "Pit", type: nil)) == .ambient)
         #expect(ChannelRoleClassifier.role(of: channel(label: "Tip", type: "probe")) == .internal)
         #expect(ChannelRoleClassifier.role(of: channel(label: "Humidity", type: nil, units: "H")) == .unknown)
+    }
+}
+
+@Suite("Probe customization and pairing")
+struct ProbeCustomizationTests {
+    private func device(_ serial: String, label: String, channels: [(String, String)]) -> DiscoveredDevice {
+        DiscoveredDevice(
+            device: TWDevice(serial: serial, label: label, type: "rfx"),
+            channels: channels.map { TWChannel(ref: TWChannelRef(deviceSerial: serial, number: $0.0), label: $0.1, value: 100, units: "F") })
+    }
+
+    private var twoProbes: [DiscoveredDevice] {
+        [device("A", label: "Brisket", channels: [("1", "Tip"), ("2", "Ambient")]),
+         device("B", label: "Ribs", channels: [("1", "Tip")])]
+    }
+
+    @Test func automaticRolesPairingAndColors() {
+        let probes = ProbeDiscovery.probes(from: twoProbes)
+        let a1 = ChannelKey(deviceSerial: "A", channel: "1"), a2 = ChannelKey(deviceSerial: "A", channel: "2")
+        let b1 = ChannelKey(deviceSerial: "B", channel: "1")
+        #expect(probes.map(\.role) == [.internal, .ambient, .internal])
+        // Ribs has no ambient of its own → shares the cook's pit sensor.
+        #expect(probes.map(\.pairedAmbient) == [a2, nil, a2])
+        // One color per meat probe; the ambient shares its first meat probe's color.
+        #expect(probes.first { $0.key == a1 }?.colorIndex == 0)
+        #expect(probes.first { $0.key == b1 }?.colorIndex == 1)
+        #expect(probes.first { $0.key == a2 }?.colorIndex == 0)
+    }
+
+    @Test func customizationsOverrideRoleAndLabel() {
+        let a1 = ChannelKey(deviceSerial: "A", channel: "1"), a2 = ChannelKey(deviceSerial: "A", channel: "2")
+        let probes = ProbeDiscovery.probes(from: twoProbes, customizations: [
+            a1: ProbeCustomization(role: .ambient, label: "Pit (left)"),
+            a2: ProbeCustomization(role: .internal, label: "  "),
+        ])
+        #expect(probes.first { $0.key == a1 }?.role == .ambient)
+        #expect(probes.first { $0.key == a1 }?.label == "Pit (left)")
+        #expect(probes.first { $0.key == a2 }?.role == .internal)
+        #expect(probes.first { $0.key == a2 }?.label == "Brisket") // blank custom label falls back
+        #expect(probes.first { $0.key == a2 }?.pairedAmbient == a1)
+    }
+
+    @Test func customizationCodableRoundTrip() throws {
+        let original = [ChannelKey(deviceSerial: "A", channel: "1"): ProbeCustomization(role: .ambient, label: "Pit", isIncluded: false)]
+        let decoded = try JSONDecoder().decode([ChannelKey: ProbeCustomization].self, from: JSONEncoder().encode(original))
+        #expect(decoded == original)
+    }
+
+    @Test func midCookRoleChangeRepairsWithoutRepainting() async throws {
+        let clock = ManualTimeSource()
+        let service = MockThermoWorksService(scenario: .twoProbesSteak, timeSource: clock)
+        var probes = ProbeDiscovery.probes(from: try await ProbeDiscovery.discover(using: service))
+        let ribeyeTip = try #require(probes.first { $0.key.deviceSerial == "RFX-RIBEYE" && $0.role == .internal })
+        let stripTip = try #require(probes.first { $0.key.deviceSerial == "RFX-STRIP" && $0.role == .internal })
+        probes = probes.map { var p = $0; if p.role == .internal { p.target = Temperature(fahrenheit: 130) }; return p }
+        let session = LiveCookSession(cook: Cook(title: "T", startedAt: clock.now, probes: probes), service: service,
+                                      store: nil, timeSource: clock)
+
+        await session.setRole(.ambient, for: ribeyeTip.key)
+        let after = await session.cook.probes
+        let changed = try #require(after.first { $0.key == ribeyeTip.key })
+        #expect(changed.role == .ambient)
+        #expect(changed.target == nil)
+        #expect(after.first { $0.key == stripTip.key }?.colorIndex == stripTip.colorIndex)
+        #expect(await session.snapshot().estimates[ribeyeTip.key] == nil)
+
+        await session.setLabel("Pit", for: ribeyeTip.key)
+        #expect(await session.cook.probe(ribeyeTip.key)?.label == "Pit")
     }
 }

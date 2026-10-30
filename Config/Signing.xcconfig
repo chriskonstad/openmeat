@@ -1,0 +1,11 @@
+// Shared signing settings. Put your own team (and, if needed, a bundle-ID prefix you own) in
+// Config/Signing.local.xcconfig — it's git-ignored:
+//
+//     DEVELOPMENT_TEAM = ABCDE12345
+//     OM_BUNDLE_ID_PREFIX = com.yourname
+//
+CODE_SIGN_STYLE = Automatic
+DEVELOPMENT_TEAM =
+OM_BUNDLE_ID_PREFIX = org.openmeat
+
+#include? "Signing.local.xcconfig"

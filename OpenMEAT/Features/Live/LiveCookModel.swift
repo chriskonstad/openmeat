@@ -14,22 +14,31 @@ final class LiveCookModel {
     private let session: LiveCookSession
     private let notifications: NotificationScheduler
     private let liveActivities: any LiveActivityControlling
+    /// Session time → real time (identity except in accelerated demo mode).
+    let wallClock: @Sendable (Date) -> Date
     private var observeTask: Task<Void, Never>?
 
     init(session: LiveCookSession, cook: Cook, settings: AppSettings, timeSource: any TimeSource,
-         notifications: NotificationScheduler, liveActivities: any LiveActivityControlling) {
+         notifications: NotificationScheduler, liveActivities: any LiveActivityControlling,
+         wallClock: @escaping @Sendable (Date) -> Date = { $0 }) {
         self.session = session
         self.settings = settings
         self.timeSource = timeSource
         self.notifications = notifications
         self.liveActivities = liveActivities
-        self.snapshot = SessionSnapshot(cook: cook, estimates: [:], staleChannels: [], lastPoll: nil, lastError: nil, now: timeSource.now)
+        self.wallClock = wallClock
+        self.snapshot = SessionSnapshot(cook: cook, now: timeSource.now)
     }
 
     var cook: Cook { snapshot.cook }
 
+    private func activityState(_ snap: SessionSnapshot) -> CookActivityAttributes.ContentState {
+        .init(snapshot: snap, unit: settings.unit, wallClock: wallClock)
+    }
+
     func start() {
-        liveActivities.start(cook: cook, state: .init(snapshot: snapshot, unit: settings.unit))
+        liveActivities.start(cookID: cook.id, title: cook.title, startedAt: wallClock(cook.startedAt),
+                             state: activityState(snapshot))
         observeTask = Task { [weak self, session] in
             for await snap in await session.snapshots() {
                 await self?.apply(snap)
@@ -38,9 +47,9 @@ final class LiveCookModel {
         Task { await session.start() }
     }
 
-    private func apply(_ snap: SessionSnapshot) async {
+    private func apply(_ snap: SessionSnapshot, forceActivityUpdate: Bool = false) async {
         snapshot = snap
-        liveActivities.update(.init(snapshot: snap, unit: settings.unit))
+        liveActivities.update(activityState(snap), force: forceActivityUpdate)
         let alerts = AlertPlanner(unit: settings.unit)
             .plan(cook: snap.cook, estimates: snap.estimates, leadTime: settings.almostDoneLeadTime, now: snap.now)
         await notifications.sync(alerts, now: snap.now)
@@ -50,6 +59,14 @@ final class LiveCookModel {
 
     func setTarget(_ target: Temperature?, for key: ChannelKey) {
         Task { await session.setTarget(target, for: key) }
+    }
+
+    func setRole(_ role: ProbeRole, for key: ChannelKey) {
+        Task { await session.setRole(role, for: key) }
+    }
+
+    func setLabel(_ label: String, for key: ChannelKey) {
+        Task { await session.setLabel(label, for: key) }
     }
 
     func addNote(_ text: String, isQuickNote: Bool = false) {
@@ -70,12 +87,27 @@ final class LiveCookModel {
         await session.pollOnce()
     }
 
+    // MARK: Background
+
+    /// One poll + Live Activity + alert refresh, completing before returning (BGAppRefreshTask).
+    func backgroundRefresh() async {
+        let snap = await session.pollOnce()
+        await apply(snap, forceActivityUpdate: true)
+        try? await session.save()
+    }
+
+    /// Last chance before suspension: push the freshest state and persist.
+    func prepareForBackground() async {
+        await apply(await session.snapshot(), forceActivityUpdate: true)
+        try? await session.save()
+    }
+
     func end() async {
         observeTask?.cancel()
         if let ended = try? await session.end() {
             snapshot.cook = ended
         }
         notifications.cancelAll()
-        liveActivities.end(.init(snapshot: snapshot, unit: settings.unit))
+        liveActivities.end(activityState(snapshot))
     }
 }

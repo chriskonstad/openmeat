@@ -14,10 +14,11 @@ struct AppModelTests {
         let model = AppModel(
             launch: LaunchConfiguration(arguments: ["-OM_MOCK", "1", "-OM_SCENARIO", scenario, "-OM_TIME_SCALE", "600", "-OM_POLL", "0.1"]),
             settings: AppSettings(defaults: defaults),
+            channels: ChannelPreferences(defaults: defaults),
             store: InMemoryCookStore(),
             credentials: InMemoryCredentialStore(),
             notificationCenter: center,
-            makeLiveActivities: { NoLiveActivityController() })
+            liveActivities: NoLiveActivityController())
         return (model, center)
     }
 

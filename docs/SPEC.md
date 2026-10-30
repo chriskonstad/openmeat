@@ -34,7 +34,7 @@ or gateway configuration — use the official app for that.
 | Flow | Description |
 | --- | --- |
 | **Sign in** | Email + password for ThermoWorks Cloud. Credentials → Keychain; tokens refreshed automatically. "Demo mode" uses the mock API (also used by UI tests and App Review). |
-| **Start a cook** | Live screen lists all online probes. "Start cook" → pick which probes/channels belong to this cook (default: all online), optional title/meat/weight → recording begins. |
+| **Start a cook** | Live screen lists all online probes. "Start cook" → pick which probes/channels belong to this cook, set each sensor's role (meat / ambient) and name — **remembered per channel for next time** — optional title → recording begins. Roles and names can also be changed mid-cook (long-press a card). |
 | **Set target** | Tap a probe card's target chip → wheel/stepper + preset list → done. Target line appears on the graph immediately; ETA starts computing. |
 | **Watch** | Live screen: probe cards (current temp, target, ETA, trend arrow, ambient) on top, interactive chart below, note bar at the bottom. |
 | **Add a note** | Tap a quick-note chip or "+" for free text. The note is time-stamped "now" (editable time) and drawn as a marker on the chart. |
@@ -55,8 +55,7 @@ standard **Firebase** project: Firebase Auth (Identity Toolkit) + Cloud Firestor
 > derivative work (GPL-3.0 is also awkward for App Store distribution). Our Swift client is written
 > **clean-room against Google's public Firebase REST documentation** plus the *facts* about
 > endpoints and document field names (which are not copyrightable). Do not copy code or
-> structure from the Python library. Decide the OpenMEAT license before the first public push
-> (see §12).
+> structure from the Python library. OpenMEAT is MIT-licensed.
 
 ### 3.1 Endpoints
 
@@ -143,14 +142,23 @@ Principles
 5. Samples are persisted incrementally (append-only, flushed every N samples / on background) so a crash loses ≤ 1 minute.
 
 ### 4.2 Background behavior (important constraint)
-iOS suspends apps in the background, so **polling stops** when the user leaves the app. Plan:
-- **v1 (on-device only):**
-  - Live Activity uses self-ticking `Text(timerInterval:)` for elapsed time and ETA countdown, so it stays meaningful without updates.
-  - The "X min before done" notification is **pre-scheduled** at `eta − leadTime` every time the ETA moves by more than a threshold; rescheduled on each foreground/background refresh.
-  - `BGAppRefreshTask` opportunistically polls, updates the Live Activity and reschedules.
-  - On returning to foreground: catch up immediately (and backfill if §3.3.3 pans out).
-  - Notifications fired from a stale estimate are worded as estimates ("should be ~5 min from done").
-- **v2 (optional relay):** a tiny self-hostable worker (e.g. Cloudflare Worker) that polls ThermoWorks for an active cook and sends ActivityKit push updates + APNs alerts. Opt-in; the app works fully without it.
+iOS suspends apps in the background, so **polling stops** and timers don't fire when the user leaves
+the app. There is no API that lets a third-party app run a timer every minute while suspended.
+What we do (implemented in `BackgroundRefresh` / `LiveActivityController`):
+
+| Lever | Effect |
+| --- | --- |
+| **Foreground + "Keep screen on"** (default on during a cook) | Real-time polling (default 15 s). Best experience: phone on a stand by the cooker. |
+| **Grace window on backgrounding** (`beginBackgroundTask`) | Pushes the freshest state to the Live Activity and saves before suspension. |
+| **`BGAppRefreshTask`**, requested 60 s out, re-requested on every wake | Opportunistic: iOS decides when (often 15+ min; more often for apps used a lot, on power). Each wake polls, updates the Live Activity, reschedules alerts. |
+| **Self-updating Live Activity UI** | Elapsed time (`Text(timerInterval:)`), ETA countdown, and a cook-progress bar (`ProgressView(timerInterval:)`) keep moving with no updates. After 20 min without an update it shows "Updated hh:mm". |
+| **Pre-scheduled alerts** | "X min before done" / "should be done" are scheduled with UNNotification time triggers from the last ETA, so they fire even while suspended. |
+| **Resume after termination** | On launch, the newest unfinished cook is resumed and its Live Activity adopted; orphaned activities from killed processes are ended. |
+
+Not used: silent-audio / location background modes (App Review rejects them for this) and
+background `URLSession` relaunch chains (iOS rate-limits relaunches; not reliable per-minute).
+
+- **v2 (optional relay):** a tiny self-hostable worker (e.g. Cloudflare Worker) that polls ThermoWorks for an active cook and sends ActivityKit push updates + APNs alerts every minute. This is the only way to get true per-minute updates while the app is suspended. Opt-in; the app works fully without it.
 
 ---
 
@@ -229,10 +237,11 @@ bounds over time (e.g. within ±15 % for the last 50 % of the cook). Tuning para
 - **Scrub**: long-press/drag shows a vertical crosshair and a tooltip with every series' value at that time, plus elapsed time.
 - **Zoom & pan**: pinch on X (time) zooms; drag pans (`chartScrollableAxes(.horizontal)`); double-tap toggles "fit all" / "last 30 min".
 - **Follow live**: when the right edge is "now", the chart auto-advances; panning away pauses follow and shows a "Jump to live" button.
-- **Legend chips** toggle series visibility; Y-axis rescales to visible series.
+- **Readout above the plot** shows each series' current value (or its value at the scrubbed time), so it never clips; its items are the legend and toggle series visibility. Y-axis rescales to visible series.
+- **Color** is reserved for data: one hue per meat probe from a CVD-validated categorical order (blue first); an ambient sensor uses a lighter tint of its meat probe's hue and is dashed; app chrome is neutral.
 - **Note markers** on the X axis; tapping one opens the note.
 - **Performance**: LTTB downsampling to ~ (2 × plot width) points per visible series; full resolution when zoomed in.
-- Axis modes: clock time / elapsed time. Units °F/°C from settings.
+- Axis modes: clock time / elapsed time (remembered). Ticks are aligned (round clock times, or round offsets from the start), spaced for ~4–6 labels, and edge labels stay inside the plot.
 
 ### 7.3 Target picker
 Sheet with large wheel (1° steps), presets grouped by meat (doneness for steaks, pull temps for BBQ), "clear target", and "apply to all internal sensors of this probe".
@@ -327,7 +336,7 @@ openmeat/
 ---
 
 ## 12. Open questions
-1. **License** for OpenMEAT (MIT/Apache-2.0 if clean-room; GPL-3.0 if we decide to port the Python library directly).
+1. ~~License~~ — **MIT** (decided 2026-10-29). The API client stays clean-room so this holds.
 2. Bundle identifier / team ID / App Group name (placeholders: `org.openmeat.OpenMEAT`, `group.org.openmeat`).
 3. Should setting a target also write `alarmHigh` to the cloud so the ThermoWorks push alarm fires as a backup? (It's "configuring the probe", but it's the only server-side alert we get for free.)
 4. Relay server (§4.2 v2): in scope for v1.x or not?

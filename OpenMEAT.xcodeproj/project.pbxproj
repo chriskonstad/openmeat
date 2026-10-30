@@ -18,6 +18,7 @@
 		46374FF7476C5C6B3E12CA78 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 4C8D76467605CE4AAEF228F5 /* Assets.xcassets */; };
 		57F2F067C5526E61A80B870D /* NotesSection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1430083D5D20600FA2D9E76D /* NotesSection.swift */; };
 		5D1E560BFEC5A7635B441DED /* CookActivityAttributes.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4985CC46D0E080F30BDF7F5D /* CookActivityAttributes.swift */; };
+		5E4304A8280853C5FA66BB68 /* PreferencesAndResumeTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5BA8DDA0DE3E6AC74C301A7 /* PreferencesAndResumeTests.swift */; };
 		63FFD716D92B410CEA33385E /* TargetPickerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2DEC6A42339CB111DB9D901 /* TargetPickerView.swift */; };
 		6497F5919638165189E47CED /* WidgetKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E9DE1F86B4B8B91276D41E58 /* WidgetKit.framework */; };
 		658A0276797463302058C834 /* CookCore in Frameworks */ = {isa = PBXBuildFile; productRef = D3CE1237B607B163E9765285 /* CookCore */; };
@@ -28,6 +29,7 @@
 		929621DF2EBBD4223AEA7E75 /* SwiftUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = ACCD253D113C31F3D5E4C0FD /* SwiftUI.framework */; };
 		9412EFA096F9AEA12EED6FA8 /* OpenMEATWidgetsBundle.swift in Sources */ = {isa = PBXBuildFile; fileRef = B13916380E7E5D18693BE615 /* OpenMEATWidgetsBundle.swift */; };
 		99E5DC1931F836FCAE85BFB6 /* LiveTab.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9843FDC8B79CF163A826CF24 /* LiveTab.swift */; };
+		9DFB77F5A721C23278AC85AE /* BackgroundRefresh.swift in Sources */ = {isa = PBXBuildFile; fileRef = 713E8B2C6A5792037EF9A8DC /* BackgroundRefresh.swift */; };
 		A3F9FA9C0FD8D212243D4B07 /* CredentialStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = F1C7218E2217FCB95EFCEDD6 /* CredentialStore.swift */; };
 		A6ECF66506383019545C497B /* HistoryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 29949D5BAB287960E1E58DD8 /* HistoryView.swift */; };
 		A758A3AFBD81667A9ED8E898 /* ChartAndActivityTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F65C1C7FE7379AEC3D11CD6 /* ChartAndActivityTests.swift */; };
@@ -45,6 +47,7 @@
 		DF6188001D3DBFFEABC5F938 /* ThermoWorksMock in Frameworks */ = {isa = PBXBuildFile; productRef = CAA977BE6B9B890DDB19C6C7 /* ThermoWorksMock */; };
 		E56D92F82A4683B2E7515DEC /* LiveCookView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9AF6FF30BC51E4AAF844D22D /* LiveCookView.swift */; };
 		EB0F9236883043114BD49294 /* LaunchConfiguration.swift in Sources */ = {isa = PBXBuildFile; fileRef = A3F36A8A080CA3E2B78EEBDC /* LaunchConfiguration.swift */; };
+		EC1C3960A8880573ACE03903 /* ChannelPreferences.swift in Sources */ = {isa = PBXBuildFile; fileRef = E756487BA5669E41C9DAE9D4 /* ChannelPreferences.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -102,6 +105,7 @@
 		6248792E173CD8D8B13D49ED /* ChartSeriesBuilder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChartSeriesBuilder.swift; sourceTree = "<group>"; };
 		63028BBB8D4A0EA5A4317492 /* AppModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppModel.swift; sourceTree = "<group>"; };
 		6615A1589411CEF31C99A430 /* LiveActivityController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LiveActivityController.swift; sourceTree = "<group>"; };
+		713E8B2C6A5792037EF9A8DC /* BackgroundRefresh.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackgroundRefresh.swift; sourceTree = "<group>"; };
 		75832A909C9D466977F761CB /* AppSettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppSettings.swift; sourceTree = "<group>"; };
 		7B9EF19FCEAAE2DC444CF905 /* LiveCookModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LiveCookModel.swift; sourceTree = "<group>"; };
 		8D670848E6D138C020844EFE /* AccessibilityID.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccessibilityID.swift; sourceTree = "<group>"; };
@@ -119,6 +123,9 @@
 		C5A2AA0C887BE8891F82C3EC /* LaunchConfigurationTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LaunchConfigurationTests.swift; sourceTree = "<group>"; };
 		D21A15E9BF506FC335EB6877 /* CookLiveActivityWidget.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CookLiveActivityWidget.swift; sourceTree = "<group>"; };
 		D4095B87D057425FCF66A216 /* OpenMEATWidgets.appex */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = "wrapper.app-extension"; path = OpenMEATWidgets.appex; sourceTree = BUILT_PRODUCTS_DIR; };
+		D5BA8DDA0DE3E6AC74C301A7 /* PreferencesAndResumeTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreferencesAndResumeTests.swift; sourceTree = "<group>"; };
+		DA163B040E664F2597AE3CEE /* Signing.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Signing.xcconfig; sourceTree = "<group>"; };
+		E756487BA5669E41C9DAE9D4 /* ChannelPreferences.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChannelPreferences.swift; sourceTree = "<group>"; };
 		E9DE1F86B4B8B91276D41E58 /* WidgetKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WidgetKit.framework; path = System/Library/Frameworks/WidgetKit.framework; sourceTree = SDKROOT; };
 		F1C7218E2217FCB95EFCEDD6 /* CredentialStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CredentialStore.swift; sourceTree = "<group>"; };
 		F4BA36A048DCA29A6BEF646A /* NotificationSchedulerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationSchedulerTests.swift; sourceTree = "<group>"; };
@@ -178,6 +185,8 @@
 		4C63D086EAB593CAF31E08BD /* Services */ = {
 			isa = PBXGroup;
 			children = (
+				713E8B2C6A5792037EF9A8DC /* BackgroundRefresh.swift */,
+				E756487BA5669E41C9DAE9D4 /* ChannelPreferences.swift */,
 				F1C7218E2217FCB95EFCEDD6 /* CredentialStore.swift */,
 				6615A1589411CEF31C99A430 /* LiveActivityController.swift */,
 				FF938266971BE58EF5B876C9 /* NotificationScheduler.swift */,
@@ -217,6 +226,7 @@
 				1F65C1C7FE7379AEC3D11CD6 /* ChartAndActivityTests.swift */,
 				C5A2AA0C887BE8891F82C3EC /* LaunchConfigurationTests.swift */,
 				F4BA36A048DCA29A6BEF646A /* NotificationSchedulerTests.swift */,
+				D5BA8DDA0DE3E6AC74C301A7 /* PreferencesAndResumeTests.swift */,
 			);
 			path = OpenMEATTests;
 			sourceTree = "<group>";
@@ -244,6 +254,7 @@
 		AA37B5FAC167FE0893A3EA28 = {
 			isa = PBXGroup;
 			children = (
+				D0F321F548AE1E6B925F47E1 /* Config */,
 				DF1040474E73CA6F9378E91B /* OpenMEAT */,
 				8A89F3B5F6076A73F888534F /* OpenMEATTests */,
 				102CC4CDA928E85711D2C130 /* OpenMEATUITests */,
@@ -285,6 +296,14 @@
 				1430083D5D20600FA2D9E76D /* NotesSection.swift */,
 			);
 			path = Notes;
+			sourceTree = "<group>";
+		};
+		D0F321F548AE1E6B925F47E1 /* Config */ = {
+			isa = PBXGroup;
+			children = (
+				DA163B040E664F2597AE3CEE /* Signing.xcconfig */,
+			);
+			path = Config;
 			sourceTree = "<group>";
 		};
 		D10A8FE5669CB80B428FDE54 /* OpenMEATWidgets */ = {
@@ -511,6 +530,7 @@
 				A758A3AFBD81667A9ED8E898 /* ChartAndActivityTests.swift in Sources */,
 				AC2F2F100F4C5884A90B91B1 /* LaunchConfigurationTests.swift in Sources */,
 				741D40EBAD1DBFB0E587D209 /* NotificationSchedulerTests.swift in Sources */,
+				5E4304A8280853C5FA66BB68 /* PreferencesAndResumeTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -530,6 +550,8 @@
 				9195D61AAC5FC63BD6D74EA0 /* AccessibilityID.swift in Sources */,
 				BC6E2A5FCA72F13290FBF7D2 /* AppModel.swift in Sources */,
 				CB91F349C55AD88177266F3E /* AppSettings.swift in Sources */,
+				9DFB77F5A721C23278AC85AE /* BackgroundRefresh.swift in Sources */,
+				EC1C3960A8880573ACE03903 /* ChannelPreferences.swift in Sources */,
 				78FAF03683856C38071C4D8E /* ChartSeriesBuilder.swift in Sources */,
 				C4ACB0B35F3CF9E73253A704 /* CookActivityAttributes.swift in Sources */,
 				21E5910B448A0AE2CA5570CE /* CookChartView.swift in Sources */,
@@ -582,7 +604,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = org.openmeat.OpenMEAT;
+				PRODUCT_BUNDLE_IDENTIFIER = "$(OM_BUNDLE_ID_PREFIX).OpenMEAT";
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = 1;
 			};
@@ -598,7 +620,7 @@
 					"@executable_path/Frameworks",
 					"@loader_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = org.openmeat.OpenMEATUITests;
+				PRODUCT_BUNDLE_IDENTIFIER = "$(OM_BUNDLE_ID_PREFIX).OpenMEATUITests";
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				TEST_TARGET_NAME = OpenMEAT;
@@ -607,6 +629,7 @@
 		};
 		32D2BE4C5FB4FB8AEB65A231 /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = DA163B040E664F2597AE3CEE /* Signing.xcconfig */;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				CLANG_ANALYZER_NONNULL = YES;
@@ -638,11 +661,9 @@
 				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
-				CODE_SIGN_STYLE = Automatic;
 				COPY_PHASE_STRIP = NO;
 				CURRENT_PROJECT_VERSION = 1;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
-				DEVELOPMENT_TEAM = "";
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_USER_SCRIPT_SANDBOXING = YES;
@@ -676,7 +697,7 @@
 					"@executable_path/Frameworks",
 					"@executable_path/../../Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = org.openmeat.OpenMEAT.Widgets;
+				PRODUCT_BUNDLE_IDENTIFIER = "$(OM_BUNDLE_ID_PREFIX).OpenMEAT.Widgets";
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = 1;
 			};
@@ -691,7 +712,7 @@
 					"@executable_path/Frameworks",
 					"@executable_path/../../Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = org.openmeat.OpenMEAT.Widgets;
+				PRODUCT_BUNDLE_IDENTIFIER = "$(OM_BUNDLE_ID_PREFIX).OpenMEAT.Widgets";
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = 1;
 			};
@@ -708,7 +729,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = org.openmeat.OpenMEAT;
+				PRODUCT_BUNDLE_IDENTIFIER = "$(OM_BUNDLE_ID_PREFIX).OpenMEAT";
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = 1;
 			};
@@ -724,7 +745,7 @@
 					"@executable_path/Frameworks",
 					"@loader_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = org.openmeat.OpenMEATUITests;
+				PRODUCT_BUNDLE_IDENTIFIER = "$(OM_BUNDLE_ID_PREFIX).OpenMEATUITests";
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				TEST_TARGET_NAME = OpenMEAT;
@@ -741,7 +762,7 @@
 					"@executable_path/Frameworks",
 					"@loader_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = org.openmeat.OpenMEATTests;
+				PRODUCT_BUNDLE_IDENTIFIER = "$(OM_BUNDLE_ID_PREFIX).OpenMEATTests";
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/OpenMEAT.app/OpenMEAT";
@@ -758,7 +779,7 @@
 					"@executable_path/Frameworks",
 					"@loader_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = org.openmeat.OpenMEATTests;
+				PRODUCT_BUNDLE_IDENTIFIER = "$(OM_BUNDLE_ID_PREFIX).OpenMEATTests";
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/OpenMEAT.app/OpenMEAT";
@@ -767,6 +788,7 @@
 		};
 		E104C32707DE05A0525C416D /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = DA163B040E664F2597AE3CEE /* Signing.xcconfig */;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				CLANG_ANALYZER_NONNULL = YES;
@@ -798,11 +820,9 @@
 				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
-				CODE_SIGN_STYLE = Automatic;
 				COPY_PHASE_STRIP = NO;
 				CURRENT_PROJECT_VERSION = 1;
 				DEBUG_INFORMATION_FORMAT = dwarf;
-				DEVELOPMENT_TEAM = "";
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
 				ENABLE_USER_SCRIPT_SANDBOXING = YES;

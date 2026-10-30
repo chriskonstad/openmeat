@@ -12,9 +12,9 @@ final class OpenMEATUITests: XCTestCase {
         app = XCUIApplication()
     }
 
-    private func launchDemo(scenario: String = "chickenFast", timeScale: Int = 120) {
+    private func launchDemo(scenario: String = "chickenFast", timeScale: Int = 120, reset: Bool = true) {
         app.launchArguments = [
-            "-OM_MOCK", "1", "-OM_RESET", "1", "-OM_NO_ANIMATIONS", "1",
+            "-OM_MOCK", "1", "-OM_RESET", reset ? "1" : "0", "-OM_NO_ANIMATIONS", "1",
             "-OM_SCENARIO", scenario, "-OM_TIME_SCALE", "\(timeScale)", "-OM_POLL", "0.5",
         ]
         app.launch()
@@ -70,6 +70,10 @@ final class OpenMEATUITests: XCTestCase {
         XCTAssertTrue(temp.waitForExistence(timeout: 10))
         wait(for: temp, "label CONTAINS '°F'", timeout: 10)
         XCTAssertTrue(element(AccessibilityID.Live.chart).exists)
+        // Freshness is always shown: "Updated <time> · now / x minutes ago".
+        let updated = app.descendants(matching: .any).matching(identifier: AccessibilityID.Live.lastUpdated).firstMatch
+        XCTAssertTrue(updated.waitForExistence(timeout: 10))
+        wait(for: updated, "label BEGINSWITH 'Updated'", timeout: 10)
     }
 
     func testSetTargetProducesETA() {
@@ -124,9 +128,10 @@ final class OpenMEATUITests: XCTestCase {
         launchDemo()
         startCook(title: "History test")
         app.buttons[AccessibilityID.Live.endCook].tap()
-        let confirm = app.buttons.matching(identifier: AccessibilityID.Live.confirmEnd).firstMatch
-        XCTAssertTrue(confirm.waitForExistence(timeout: 5))
-        confirm.tap()
+        let alert = app.alerts["End this cook?"]
+        XCTAssertTrue(alert.waitForExistence(timeout: 5))
+        XCTAssertTrue(alert.buttons["Keep Cooking"].exists)
+        alert.buttons["End & Save"].firstMatch.tap()
         XCTAssertTrue(element(AccessibilityID.StartCook.title).waitForExistence(timeout: 10))
 
         app.tabBars.buttons["History"].tap()
@@ -134,6 +139,53 @@ final class OpenMEATUITests: XCTestCase {
         XCTAssertTrue(row.waitForExistence(timeout: 10))
         row.tap()
         XCTAssertTrue(element(AccessibilityID.History.detailChart).waitForExistence(timeout: 10))
+    }
+
+    func testCancellingEndKeepsCooking() {
+        launchDemo()
+        startCook()
+        app.buttons[AccessibilityID.Live.endCook].tap()
+        let alert = app.alerts["End this cook?"]
+        XCTAssertTrue(alert.waitForExistence(timeout: 5))
+        alert.buttons["Keep Cooking"].firstMatch.tap()
+        XCTAssertTrue(element(AccessibilityID.Live.probeCard(tipKey)).waitForExistence(timeout: 5))
+    }
+
+    func testChannelRoleAndNameAreRemembered() {
+        launchDemo()
+        let ambientKey = "RFX-CHICKEN#2"
+        let role = app.segmentedControls[AccessibilityID.StartCook.role(ambientKey)]
+        XCTAssertTrue(role.waitForExistence(timeout: 10))
+        XCTAssertTrue(role.buttons["Ambient"].isSelected)
+        role.buttons["Meat"].tap()
+        XCTAssertTrue(role.buttons["Meat"].isSelected)
+
+        app.buttons[AccessibilityID.StartCook.rename(ambientKey)].tap()
+        let field = app.alerts.textFields.firstMatch
+        XCTAssertTrue(field.waitForExistence(timeout: 5))
+        field.clearAndType("Second bird")
+        app.alerts.buttons["Save"].firstMatch.tap()
+        wait(for: app.buttons[AccessibilityID.StartCook.rename(ambientKey)], "label CONTAINS 'Second bird'", timeout: 5)
+
+        // Relaunch without resetting: choices persist.
+        app.terminate()
+        launchDemo(reset: false)
+        let roleAgain = app.segmentedControls[AccessibilityID.StartCook.role(ambientKey)]
+        XCTAssertTrue(roleAgain.waitForExistence(timeout: 10))
+        XCTAssertTrue(roleAgain.buttons["Meat"].isSelected)
+        wait(for: app.buttons[AccessibilityID.StartCook.rename(ambientKey)], "label CONTAINS 'Second bird'", timeout: 5)
+    }
+
+    func testChartReadoutShowsValuesAndAxisToggle() {
+        launchDemo()
+        startCook()
+        let value = element(AccessibilityID.Live.readoutValue(tipKey))
+        XCTAssertTrue(value.waitForExistence(timeout: 10))
+        wait(for: value, "label CONTAINS '°F'", timeout: 10)
+        let axis = app.segmentedControls[AccessibilityID.Live.chartAxisMode]
+        XCTAssertTrue(axis.exists)
+        axis.buttons["Elapsed"].tap()
+        XCTAssertTrue(axis.buttons["Elapsed"].isSelected)
     }
 
     func testAlmostDoneLeadTimeDefaultsToFiveAndIsAdjustable() {
@@ -147,5 +199,15 @@ final class OpenMEATUITests: XCTestCase {
         XCTAssertNotNil(increment)
         increment?.tap()
         wait(for: element(AccessibilityID.Settings.leadTimeValue), "label CONTAINS '6 min'", timeout: 5)
+    }
+}
+
+private extension XCUIElement {
+    func clearAndType(_ text: String) {
+        tap()
+        if let current = value as? String, !current.isEmpty {
+            typeText(String(repeating: XCUIKeyboardKey.delete.rawValue, count: current.count))
+        }
+        typeText(text)
     }
 }

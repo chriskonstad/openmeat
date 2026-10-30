@@ -23,6 +23,14 @@ final class AppSettings {
     var quickNotes: [String] {
         didSet { defaults.set(quickNotes, forKey: Keys.quickNotes) }
     }
+    /// Keep the display awake while a cook is open in the foreground (live data, no background limits).
+    var keepScreenOn: Bool {
+        didSet { defaults.set(keepScreenOn, forKey: Keys.keepScreenOn) }
+    }
+    /// Chart X axis: clock time or time since the cook started.
+    var chartShowsElapsedTime: Bool {
+        didSet { defaults.set(chartShowsElapsedTime, forKey: Keys.chartElapsed) }
+    }
 
     var almostDoneLeadTime: TimeInterval { TimeInterval(almostDoneLeadMinutes * 60) }
 
@@ -35,10 +43,24 @@ final class AppSettings {
         pollIntervalSeconds = defaults.object(forKey: Keys.poll) as? Double ?? 15
         liveActivitiesEnabled = defaults.object(forKey: Keys.liveActivities) as? Bool ?? true
         quickNotes = defaults.stringArray(forKey: Keys.quickNotes) ?? QuickNotes.defaults
+        keepScreenOn = defaults.object(forKey: Keys.keepScreenOn) as? Bool ?? true
+        chartShowsElapsedTime = defaults.bool(forKey: Keys.chartElapsed)
     }
 
     func reset() {
-        for key in [Keys.unit, Keys.lead, Keys.poll, Keys.liveActivities, Keys.quickNotes] {
+        for key in [Keys.unit, Keys.lead, Keys.poll, Keys.liveActivities, Keys.quickNotes, Keys.keepScreenOn, Keys.chartElapsed] {
+            defaults.removeObject(forKey: key)
+        }
+        let fresh = AppSettings(defaults: defaults)
+        unit = fresh.unit
+        almostDoneLeadMinutes = fresh.almostDoneLeadMinutes
+        pollIntervalSeconds = fresh.pollIntervalSeconds
+        liveActivitiesEnabled = fresh.liveActivitiesEnabled
+        quickNotes = fresh.quickNotes
+        keepScreenOn = fresh.keepScreenOn
+        chartShowsElapsedTime = fresh.chartShowsElapsedTime
+        // The didSets above re-wrote defaults; clear again so "unset" means "use the default".
+        for key in [Keys.unit, Keys.lead, Keys.poll, Keys.liveActivities, Keys.quickNotes, Keys.keepScreenOn, Keys.chartElapsed] {
             defaults.removeObject(forKey: key)
         }
     }
@@ -49,5 +71,7 @@ final class AppSettings {
         static let poll = "settings.pollIntervalSeconds"
         static let liveActivities = "settings.liveActivitiesEnabled"
         static let quickNotes = "settings.quickNotes"
+        static let keepScreenOn = "settings.keepScreenOn"
+        static let chartElapsed = "settings.chartShowsElapsedTime"
     }
 }

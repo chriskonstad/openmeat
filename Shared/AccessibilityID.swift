@@ -15,6 +15,8 @@ enum AccessibilityID {
         static let start = "startCook.start"
         static let refresh = "startCook.refresh"
         static func probeToggle(_ key: String) -> String { "startCook.probe.\(key)" }
+        static func role(_ key: String) -> String { "startCook.role.\(key)" }
+        static func rename(_ key: String) -> String { "startCook.rename.\(key)" }
     }
 
     enum Live {
@@ -22,8 +24,13 @@ enum AccessibilityID {
         static let elapsed = "live.elapsed"
         static let endCook = "live.endCook"
         static let confirmEnd = "live.confirmEnd"
+        static let cancelEnd = "live.cancelEnd"
         static let chart = "live.chart"
         static let jumpToLive = "live.jumpToLive"
+        static let chartReadout = "live.chart.readout"
+        static let lastUpdated = "live.lastUpdated"
+        static let chartAxisMode = "live.chart.axisMode"
+        static func readoutValue(_ key: String) -> String { "live.chart.readout.\(key)" }
         static func probeCard(_ key: String) -> String { "live.probe.\(key)" }
         static func probeTemp(_ key: String) -> String { "live.probe.\(key).temp" }
         static func targetButton(_ key: String) -> String { "live.probe.\(key).target" }
@@ -68,6 +75,7 @@ enum AccessibilityID {
         static let leadTime = "settings.leadTime"
         static let leadTimeValue = "settings.leadTime.value"
         static let liveActivities = "settings.liveActivities"
+        static let keepScreenOn = "settings.keepScreenOn"
         static let signOut = "settings.signOut"
     }
 }

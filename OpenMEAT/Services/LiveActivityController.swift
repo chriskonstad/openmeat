@@ -5,7 +5,9 @@ import Foundation
 
 extension CookActivityAttributes.ContentState {
     /// Pure mapping from a session snapshot — unit tested.
-    init(snapshot: SessionSnapshot, unit: TemperatureUnit) {
+    /// `wallClock` converts the session's timeline to real time (identity except in accelerated demo mode),
+    /// because Live Activity timers run on the system clock.
+    init(snapshot: SessionSnapshot, unit: TemperatureUnit, wallClock: (Date) -> Date = { $0 }) {
         let probe = snapshot.primaryProbe
         let series = probe.flatMap { snapshot.cook.series[$0.key] }
         let estimate = probe.flatMap { snapshot.estimates[$0.key] }
@@ -21,9 +23,11 @@ extension CookActivityAttributes.ContentState {
             currentCelsius: series?.last?.celsius,
             targetCelsius: probe?.target?.celsius,
             startCelsius: series?.first?.celsius,
-            eta: estimate?.state == .estimating ? estimate?.eta : nil,
+            eta: estimate?.state == .estimating ? estimate?.eta.map(wallClock) : nil,
             status: status,
             unit: unit.rawValue,
+            updatedAt: wallClock(snapshot.latestReadingTime ?? snapshot.now),
+            isDataStale: snapshot.isStale,
             isEnded: !snapshot.cook.isActive
         )
     }
@@ -31,12 +35,17 @@ extension CookActivityAttributes.ContentState {
 
 @MainActor
 protocol LiveActivityControlling: AnyObject {
-    func start(cook: Cook, state: CookActivityAttributes.ContentState)
-    func update(_ state: CookActivityAttributes.ContentState)
+    /// `startedAt` is wall-clock time.
+    func start(cookID: UUID, title: String, startedAt: Date, state: CookActivityAttributes.ContentState)
+    /// `force` bypasses throttling (background refresh, about to suspend).
+    func update(_ state: CookActivityAttributes.ContentState, force: Bool)
     func end(_ state: CookActivityAttributes.ContentState)
+    /// Ends activities left behind by a previous process (crash, termination), except the
+    /// one for `activeCookID`, which is adopted so updates continue on the same activity.
+    func reconcile(activeCookID: UUID?)
 }
 
-/// ActivityKit implementation. Throttles updates (ActivityKit budgets frequent updates).
+/// ActivityKit implementation. Throttles foreground updates (the system coalesces frequent updates anyway).
 @MainActor
 final class LiveActivityController: LiveActivityControlling {
     private var activityID: String?
@@ -44,19 +53,31 @@ final class LiveActivityController: LiveActivityControlling {
     private var lastUpdate: Date = .distantPast
     private let minimumInterval: TimeInterval
 
-    init(minimumInterval: TimeInterval = 15) {
+    init(minimumInterval: TimeInterval = 10) {
         self.minimumInterval = minimumInterval
     }
 
-    func start(cook: Cook, state: CookActivityAttributes.ContentState) {
-        guard ActivityAuthorizationInfo().areActivitiesEnabled, activityID == nil else { return }
-        let attributes = CookActivityAttributes(cookID: cook.id, title: cook.title, startedAt: cook.startedAt)
-        activityID = (try? Activity.request(attributes: attributes, content: .init(state: state, staleDate: nil)))?.id
+    /// Updates keep the activity "fresh" this long; past it the widget shows "Updated hh:mm".
+    static let staleAfter: TimeInterval = 20 * 60
+
+    func start(cookID: UUID, title: String, startedAt: Date, state: CookActivityAttributes.ContentState) {
+        guard ActivityAuthorizationInfo().areActivitiesEnabled else { return }
+        reconcile(activeCookID: cookID)
+        if activityID != nil {
+            update(state, force: true)
+            return
+        }
+        let attributes = CookActivityAttributes(cookID: cookID, title: title, startedAt: startedAt)
+        activityID = (try? Activity.request(
+            attributes: attributes,
+            content: .init(state: state, staleDate: Date().addingTimeInterval(Self.staleAfter))))?.id
         lastState = state
+        lastUpdate = Date()
     }
 
-    func update(_ state: CookActivityAttributes.ContentState) {
-        guard let activityID, state != lastState, Date().timeIntervalSince(lastUpdate) >= minimumInterval else { return }
+    func update(_ state: CookActivityAttributes.ContentState, force: Bool) {
+        guard let activityID, state != lastState else { return }
+        guard force || Date().timeIntervalSince(lastUpdate) >= minimumInterval else { return }
         lastState = state
         lastUpdate = Date()
         Task { await Self.push(activityID, state, end: false) }
@@ -65,25 +86,48 @@ final class LiveActivityController: LiveActivityControlling {
     func end(_ state: CookActivityAttributes.ContentState) {
         guard let activityID else { return }
         self.activityID = nil
+        lastState = nil
         Task { await Self.push(activityID, state, end: true) }
     }
 
-    /// Activity isn't Sendable, so look it up off the main actor by id.
+    func reconcile(activeCookID: UUID?) {
+        for activity in Activity<CookActivityAttributes>.activities {
+            if let activeCookID, activity.attributes.cookID == activeCookID, activity.activityState == .active {
+                activityID = activity.id
+            } else {
+                let id = activity.id
+                Task { await Self.dismiss(id) }
+            }
+        }
+    }
+
+    // Activity isn't Sendable, so it's looked up off the main actor by id.
     private nonisolated static func push(_ id: String, _ state: CookActivityAttributes.ContentState, end: Bool) async {
         guard let activity = Activity<CookActivityAttributes>.activities.first(where: { $0.id == id }) else { return }
         if end {
             await activity.end(.init(state: state, staleDate: nil), dismissalPolicy: .after(Date().addingTimeInterval(30 * 60)))
         } else {
-            await activity.update(.init(state: state, staleDate: Date().addingTimeInterval(15 * 60)))
+            await activity.update(.init(state: state, staleDate: Date().addingTimeInterval(staleAfter)))
         }
+    }
+
+    private nonisolated static func dismiss(_ id: String) async {
+        guard let activity = Activity<CookActivityAttributes>.activities.first(where: { $0.id == id }) else { return }
+        await activity.end(nil, dismissalPolicy: .immediate)
     }
 }
 
-/// No-op (tests, demo when activities are disabled).
+/// Records calls instead of talking to ActivityKit (tests; Live Activities disabled).
 @MainActor
 final class NoLiveActivityController: LiveActivityControlling {
+    private(set) var started: [UUID] = []
     private(set) var states: [CookActivityAttributes.ContentState] = []
-    func start(cook: Cook, state: CookActivityAttributes.ContentState) { states.append(state) }
-    func update(_ state: CookActivityAttributes.ContentState) { states.append(state) }
+    private(set) var reconciled: [UUID?] = []
+    func start(cookID: UUID, title: String, startedAt: Date, state: CookActivityAttributes.ContentState) {
+        started.append(cookID)
+        states.append(state)
+    }
+    func update(_ state: CookActivityAttributes.ContentState, force: Bool) { states.append(state) }
     func end(_ state: CookActivityAttributes.ContentState) { states.append(state) }
+    func reconcile(activeCookID: UUID?) { reconciled.append(activeCookID) }
 }

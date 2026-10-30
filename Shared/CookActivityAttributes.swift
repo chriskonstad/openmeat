@@ -16,6 +16,10 @@ struct CookActivityAttributes: ActivityAttributes {
         var status: String?
         /// "F" or "C".
         var unit: String
+        /// Wall-clock time of the newest reading shown. Always displayed ("Updated 3:42 PM · 4 minutes ago").
+        var updatedAt: Date
+        /// The probes themselves stopped reporting (gateway offline etc.), even though the app is updating.
+        var isDataStale: Bool = false
         var isEnded: Bool = false
     }
 

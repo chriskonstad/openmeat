@@ -30,6 +30,14 @@ struct SettingsView: View {
                 } footer: {
                     Text("Alerts are based on the estimated time to target and may fire early or late.")
                 }
+                Section {
+                    Toggle("Keep screen on during a cook", isOn: $settings.keepScreenOn)
+                        .accessibilityIdentifier(AccessibilityID.Settings.keepScreenOn)
+                } header: {
+                    Text("Background")
+                } footer: {
+                    Text("With OpenMEAT open, readings update every few seconds. In the background iOS only lets the app check in occasionally (often every 15 minutes or more), so the Live Activity's timers keep counting between updates and shows when it last refreshed.")
+                }
                 Section("Data") {
                     Picker("Refresh every", selection: $settings.pollIntervalSeconds) {
                         ForEach([5.0, 10, 15, 30, 60], id: \.self) { Text("\(Int($0)) s").tag($0) }

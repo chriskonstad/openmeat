@@ -55,6 +55,50 @@ enum ChartSeriesBuilder {
         return found.map { points[$0].value }
     }
 
+    /// Full-resolution lookup: most recent sample at or before `time`.
+    static func sample(at time: Date, in samples: [Sample]) -> Sample? {
+        var low = 0, high = samples.count - 1, found: Int?
+        while low <= high {
+            let mid = (low + high) / 2
+            if samples[mid].time <= time {
+                found = mid
+                low = mid + 1
+            } else {
+                high = mid - 1
+            }
+        }
+        return found.map { samples[$0] }
+    }
+
+    /// Tick spacing giving ~4–6 labels across the visible window.
+    static func tickStride(visibleLength: TimeInterval) -> TimeInterval {
+        let candidates: [TimeInterval] = [5, 10, 15, 30, 60, 120, 180, 240, 360, 720].map { $0 * 60 }
+        return candidates.first { visibleLength / $0 <= 6 } ?? candidates.last!
+    }
+
+    /// Tick dates across the whole scrollable domain. Clock mode aligns to round clock times
+    /// (10:00, 10:15…); elapsed mode aligns to the cook start (+0, +15m…).
+    static func axisTicks(from start: Date, to end: Date, visibleLength: TimeInterval, alignedToStart: Bool,
+                          calendar: Calendar = .current) -> [Date] {
+        guard end > start else { return [] }
+        let stride = tickStride(visibleLength: visibleLength)
+        var first: Date
+        if alignedToStart {
+            first = start
+        } else {
+            // Align to multiples of the stride within the local day.
+            let dayStart = calendar.startOfDay(for: start)
+            let offset = start.timeIntervalSince(dayStart)
+            first = dayStart.addingTimeInterval((offset / stride).rounded(.up) * stride)
+        }
+        var ticks: [Date] = []
+        while first <= end, ticks.count < 2_000 {
+            ticks.append(first)
+            first = first.addingTimeInterval(stride)
+        }
+        return ticks
+    }
+
     /// Y domain covering visible values and targets, padded, never narrower than `minimumSpan`.
     static func yDomain(_ series: [ChartSeries], minimumSpan: Double = 20) -> ClosedRange<Double> {
         let values = series.flatMap { $0.points.map(\.value) + ($0.target.map { [$0] } ?? []) }

@@ -5,7 +5,9 @@ XCODEBUILD = xcodebuild -project OpenMEAT.xcodeproj -scheme OpenMEAT -destinatio
 	-derivedDataPath build/DerivedData CODE_SIGNING_ALLOWED=NO
 PACKAGE = Packages/OpenMEATKit
 
-.PHONY: generate build test test-package test-unit test-integration test-app test-app-unit test-ui test-live clean
+DEVICE ?= $(shell xcrun devicectl list devices 2>/dev/null | awk '/available \(paired\)/ && /iPhone/ {for (i=1;i<=NF;i++) if ($$i ~ /^[0-9A-F]{8}-[0-9A-F]{16}$$/) {print $$i; exit}}')
+
+.PHONY: device generate build test test-package test-unit test-integration test-app test-app-unit test-ui test-live clean
 
 ## Regenerate OpenMEAT.xcodeproj from project.yml (requires `brew install xcodegen`).
 generate:
@@ -44,3 +46,11 @@ test-ui: generate
 
 clean:
 	rm -rf build $(PACKAGE)/.build
+
+## Build, install and launch on a connected iPhone (needs Config/Signing.local.xcconfig).
+device: generate
+	@test -n "$(DEVICE)" || (echo "No paired iPhone found; pass DEVICE=<udid>" && exit 1)
+	xcodebuild -project OpenMEAT.xcodeproj -scheme OpenMEAT -configuration Debug -destination 'id=$(DEVICE)' \
+		-derivedDataPath build/DeviceData -allowProvisioningUpdates build
+	xcrun devicectl device install app --device $(DEVICE) build/DeviceData/Build/Products/Debug-iphoneos/OpenMEAT.app
+	xcrun devicectl device process launch --device $(DEVICE) $$(/usr/libexec/PlistBuddy -c 'Print CFBundleIdentifier' build/DeviceData/Build/Products/Debug-iphoneos/OpenMEAT.app/Info.plist)
