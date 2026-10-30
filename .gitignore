@@ -1,0 +1,12 @@
+.DS_Store
+build/
+.build/
+DerivedData/
+*.xcresult
+xcuserdata/
+*.xcuserstate
+.swiftpm/
+Packages/OpenMEATKit/.swiftpm/
+# Local signing / secrets
+*.local.xcconfig
+.secrets

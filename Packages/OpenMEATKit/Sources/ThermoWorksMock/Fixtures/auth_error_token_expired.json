@@ -1,0 +1,7 @@
+{
+  "error": {
+    "code": 400,
+    "message": "TOKEN_EXPIRED",
+    "errors": [{ "message": "TOKEN_EXPIRED", "domain": "global", "reason": "invalid" }]
+  }
+}

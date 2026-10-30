@@ -1,0 +1,38 @@
+[
+  {
+    "document": {
+      "name": "projects/tw-test/databases/(default)/documents/devices/RFX-TEST-1",
+      "fields": {
+        "serial": { "stringValue": "RFX-TEST-1" },
+        "label": { "stringValue": "Brisket Probe" },
+        "type": { "stringValue": "rfx" },
+        "device": { "stringValue": "rfx meat" },
+        "accountId": { "stringValue": "test-account" },
+        "battery": { "integerValue": "92" },
+        "batteryState": { "stringValue": "NORMAL" },
+        "gatewayRSSI": { "stringValue": "-55" },
+        "status": { "stringValue": "NORMAL" },
+        "transmitIntervalInSeconds": { "integerValue": "15" },
+        "lastSeen": { "timestampValue": "2026-10-29T18:00:00Z" },
+        "someFutureField": { "geoPointValue": { "latitude": 1, "longitude": 2 } }
+      },
+      "createTime": "2025-06-01T00:00:00.000Z",
+      "updateTime": "2026-10-29T18:00:00.000Z"
+    },
+    "readTime": "2026-10-29T18:00:01.000Z"
+  },
+  {
+    "document": {
+      "name": "projects/tw-test/databases/(default)/documents/devices/NODE-1",
+      "fields": {
+        "serial": { "stringValue": "NODE-1" },
+        "label": { "stringValue": "Garage Node" },
+        "type": { "stringValue": "node" },
+        "accountId": { "stringValue": "test-account" },
+        "wifi_stength": { "integerValue": "-61" }
+      }
+    },
+    "readTime": "2026-10-29T18:00:01.000Z"
+  },
+  { "readTime": "2026-10-29T18:00:01.000Z" }
+]

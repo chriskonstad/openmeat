@@ -1,0 +1,10 @@
+{
+  "kind": "identitytoolkit#VerifyPasswordResponse",
+  "localId": "test-uid",
+  "email": "cook@example.com",
+  "displayName": "",
+  "idToken": "id-token-1",
+  "registered": true,
+  "refreshToken": "refresh-token-1",
+  "expiresIn": "3600"
+}

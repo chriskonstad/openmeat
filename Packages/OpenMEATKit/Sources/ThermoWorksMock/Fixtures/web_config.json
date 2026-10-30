@@ -1,0 +1,6 @@
+{
+  "projectId": "tw-test",
+  "appId": "1:000000000000:web:test",
+  "storageBucket": "tw-test.appspot.com",
+  "authDomain": "tw-test.firebaseapp.com"
+}

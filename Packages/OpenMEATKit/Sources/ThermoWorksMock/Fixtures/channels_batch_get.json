@@ -1,0 +1,39 @@
+[
+{ "found":
+{
+  "name": "projects/tw-test/databases/(default)/documents/devices/RFX-TEST-1/channels/1",
+  "fields": {
+    "number": { "stringValue": "1" },
+    "label": { "stringValue": "Tip" },
+    "type": { "stringValue": "probe" },
+    "value": { "doubleValue": 151.3 },
+    "units": { "stringValue": "F" },
+    "status": { "stringValue": "NORMAL" },
+    "lastSeen": { "timestampValue": "2026-10-29T18:00:00.000Z" },
+    "lastTelemetrySaved": { "timestampValue": "2026-10-29T18:00:00.000Z" },
+    "alarmHigh": { "mapValue": { "fields": {
+      "enabled": { "booleanValue": false }, "alarming": { "booleanValue": false },
+      "value": { "integerValue": "203" }, "units": { "stringValue": "F" } } } }
+  }
+}
+, "readTime": "2026-10-29T18:00:01Z" },
+{ "found":
+{
+  "name": "projects/tw-test/databases/(default)/documents/devices/RFX-TEST-1/channels/2",
+  "fields": {
+    "number": { "stringValue": "2" },
+    "label": { "stringValue": "Ambient" },
+    "type": { "stringValue": "ambient" },
+    "value": { "integerValue": "248" },
+    "units": { "stringValue": "F" },
+    "status": { "stringValue": "NORMAL" },
+    "lastSeen": { "timestampValue": "2026-10-29T18:00:00.000Z" },
+    "lastTelemetrySaved": { "timestampValue": "2026-10-29T18:00:00.000Z" },
+    "alarmHigh": { "mapValue": { "fields": {
+      "enabled": { "booleanValue": false }, "alarming": { "booleanValue": false },
+      "value": { "integerValue": "203" }, "units": { "stringValue": "F" } } } }
+  }
+}
+, "readTime": "2026-10-29T18:00:01Z" },
+{ "missing": "projects/tw-test/databases/(default)/documents/devices/RFX-TEST-1/channels/9", "readTime": "2026-10-29T18:00:01Z" }
+]

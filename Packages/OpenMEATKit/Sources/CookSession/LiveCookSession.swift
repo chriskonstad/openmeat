@@ -1,0 +1,278 @@
+import CookCore
+import Foundation
+import ThermoWorksCloud
+
+/// Everything the UI, Live Activity and notification layers need at a point in time.
+public struct SessionSnapshot: Sendable, Equatable {
+    public var cook: Cook
+    /// Only for internal probes that have a target.
+    public var estimates: [ChannelKey: Estimate]
+    public var staleChannels: Set<ChannelKey>
+    public var lastPoll: Date?
+    public var lastError: String?
+    public var now: Date
+
+    public init(cook: Cook, estimates: [ChannelKey: Estimate] = [:], staleChannels: Set<ChannelKey> = [],
+                lastPoll: Date? = nil, lastError: String? = nil, now: Date) {
+        self.cook = cook
+        self.estimates = estimates
+        self.staleChannels = staleChannels
+        self.lastPoll = lastPoll
+        self.lastError = lastError
+        self.now = now
+    }
+
+    public func estimate(_ key: ChannelKey) -> Estimate? { estimates[key] }
+
+    /// The probe to feature (Live Activity, compact UI): soonest ETA, else first targeted, else first internal.
+    public var primaryProbe: CookProbe? {
+        let internals = cook.probes.filter { $0.role == .internal }
+        let withETA = internals.compactMap { p in estimates[p.key]?.eta.map { (p, $0) } }
+        if let soonest = withETA.min(by: { $0.1 < $1.1 }) { return soonest.0 }
+        return internals.first { $0.target != nil } ?? internals.first
+    }
+}
+
+/// Owns an active cook: polls ThermoWorks, records samples, runs estimators, persists, publishes snapshots.
+public actor LiveCookSession {
+    public typealias EstimatorFactory = @Sendable () -> any DoneTimeEstimator
+
+    public struct Options: Sendable {
+        /// Real-time seconds between polls.
+        public var pollInterval: Duration = .seconds(15)
+        /// A channel with no new reading for this long (in `TimeSource` time) is stale.
+        public var staleAfter: TimeInterval = 180
+        /// Ambient readings older than this (relative to the probe reading) aren't used for estimates.
+        public var ambientMaxAge: TimeInterval = 120
+        /// Persist after this many poll cycles that recorded new samples.
+        public var saveEveryPolls: Int = 4
+
+        public init() {}
+    }
+
+    public private(set) var cook: Cook
+    private let service: any ThermoWorksService
+    private let store: (any CookStore)?
+    private let time: any TimeSource
+    private let options: Options
+    private let makeEstimator: EstimatorFactory
+
+    private var estimators: [ChannelKey: any DoneTimeEstimator] = [:]
+    private var lastTelemetry: [ChannelKey: Date] = [:]
+    private var lastPoll: Date?
+    private var lastError: String?
+    private var pollsSinceSave = 0
+    private var pollTask: Task<Void, Never>?
+    private var continuations: [UUID: AsyncStream<SessionSnapshot>.Continuation] = [:]
+
+    public init(
+        cook: Cook,
+        service: any ThermoWorksService,
+        store: (any CookStore)?,
+        timeSource: any TimeSource,
+        options: Options = Options(),
+        makeEstimator: @escaping EstimatorFactory = { NewtonEWMAEstimator() }
+    ) {
+        self.cook = cook
+        self.service = service
+        self.store = store
+        self.time = timeSource
+        self.options = options
+        self.makeEstimator = makeEstimator
+        // Resuming a cook (e.g. after relaunch): rebuild estimator state from recorded samples.
+        for probe in cook.probes where probe.role == .internal {
+            var estimator = makeEstimator()
+            for sample in cook.series[probe.key] ?? [] {
+                estimator.ingest(Self.input(for: sample, ambientKey: probe.pairedAmbient, in: cook, maxAge: options.ambientMaxAge))
+            }
+            estimators[probe.key] = estimator
+        }
+        for (key, samples) in cook.series {
+            lastTelemetry[key] = samples.last?.time
+        }
+    }
+
+    // MARK: Observation
+
+    public func snapshot() -> SessionSnapshot {
+        let now = time.now
+        var estimates: [ChannelKey: Estimate] = [:]
+        for probe in cook.probes where probe.role == .internal {
+            guard let target = probe.target, let estimator = estimators[probe.key] else { continue }
+            estimates[probe.key] = estimator.estimate(target: target, now: now)
+        }
+        let stale = Set(cook.probes.map(\.key).filter { key in
+            guard let last = cook.series[key]?.last?.time else { return lastPoll != nil }
+            return now.timeIntervalSince(last) > options.staleAfter
+        })
+        return SessionSnapshot(cook: cook, estimates: estimates, staleChannels: stale,
+                               lastPoll: lastPoll, lastError: lastError, now: now)
+    }
+
+    /// Emits the current snapshot immediately, then after every change.
+    public func snapshots() -> AsyncStream<SessionSnapshot> {
+        let id = UUID()
+        let (stream, continuation) = AsyncStream.makeStream(of: SessionSnapshot.self, bufferingPolicy: .bufferingNewest(1))
+        continuations[id] = continuation
+        continuation.onTermination = { [weak self] _ in
+            Task { await self?.removeContinuation(id) }
+        }
+        continuation.yield(snapshot())
+        return stream
+    }
+
+    private func removeContinuation(_ id: UUID) { continuations[id] = nil }
+
+    private func publish() {
+        let snap = snapshot()
+        for continuation in continuations.values { continuation.yield(snap) }
+    }
+
+    // MARK: Polling
+
+    public func start() {
+        guard pollTask == nil else { return }
+        let interval = options.pollInterval
+        pollTask = Task { [weak self] in
+            while !Task.isCancelled {
+                await self?.pollOnce()
+                try? await Task.sleep(for: interval)
+            }
+        }
+    }
+
+    public func stop() {
+        pollTask?.cancel()
+        pollTask = nil
+    }
+
+    /// One poll cycle. Exposed for tests and background refresh.
+    @discardableResult
+    public func pollOnce() async -> SessionSnapshot {
+        let refs = cook.probes.map { TWChannelRef(deviceSerial: $0.key.deviceSerial, number: $0.key.channel) }
+        do {
+            let channels = try await service.channels(refs)
+            ingest(channels)
+            lastError = nil
+        } catch {
+            lastError = error.localizedDescription
+        }
+        lastPoll = time.now
+        publish()
+        return snapshot()
+    }
+
+    func ingest(_ channels: [TWChannel]) {
+        let now = time.now
+        var updated: [ChannelKey] = []
+        for channel in channels {
+            let key = channel.key
+            guard cook.probe(key) != nil, let temperature = channel.temperature else { continue }
+            let readingTime = channel.lastTelemetrySaved ?? now
+            // Firestore docs don't change between telemetry packets — don't record duplicates.
+            if let last = lastTelemetry[key], readingTime <= last { continue }
+            if cook.append(Sample(time: readingTime, celsius: temperature.celsius), to: key) {
+                lastTelemetry[key] = readingTime
+                updated.append(key)
+            }
+        }
+        // Estimators after all samples so paired ambient readings from this poll are available.
+        for key in updated {
+            guard let probe = cook.probe(key), probe.role == .internal, let sample = cook.series[key]?.last else { continue }
+            estimators[key, default: makeEstimator()]
+                .ingest(Self.input(for: sample, ambientKey: probe.pairedAmbient, in: cook, maxAge: options.ambientMaxAge))
+        }
+        if !updated.isEmpty {
+            pollsSinceSave += 1
+            if pollsSinceSave >= options.saveEveryPolls { persistSoon() }
+        }
+    }
+
+    private static func input(for sample: Sample, ambientKey: ChannelKey?, in cook: Cook, maxAge: TimeInterval) -> EstimatorInput {
+        // Most recent ambient reading at or before the probe reading.
+        let ambient = ambientKey.flatMap { key in
+            cook.series[key]?.last { $0.time <= sample.time && sample.time.timeIntervalSince($0.time) <= maxAge }
+        }
+        return EstimatorInput(time: sample.time, probeCelsius: sample.celsius, ambientCelsius: ambient?.celsius)
+    }
+
+    // MARK: Mutations
+
+    public func setTarget(_ target: Temperature?, for key: ChannelKey) {
+        guard let index = cook.probes.firstIndex(where: { $0.key == key }) else { return }
+        cook.probes[index].target = target
+        persistSoon()
+        publish()
+    }
+
+    public func setRole(_ role: ProbeRole, for key: ChannelKey) {
+        guard let index = cook.probes.firstIndex(where: { $0.key == key }) else { return }
+        cook.probes[index].role = role
+        persistSoon()
+        publish()
+    }
+
+    @discardableResult
+    public func addNote(_ text: String, at date: Date? = nil, isQuickNote: Bool = false) -> CookNote {
+        let note = CookNote(time: date ?? time.now, text: text, isQuickNote: isQuickNote)
+        cook.notes.append(note)
+        cook.notes.sort { $0.time < $1.time }
+        persistSoon()
+        publish()
+        return note
+    }
+
+    public func deleteNote(id: UUID) {
+        cook.notes.removeAll { $0.id == id }
+        persistSoon()
+        publish()
+    }
+
+    public func setTitle(_ title: String) {
+        cook.title = title
+        persistSoon()
+        publish()
+    }
+
+    public func setAlmostDoneLeadTime(_ lead: TimeInterval?) {
+        cook.almostDoneLeadTime = lead
+        persistSoon()
+        publish()
+    }
+
+    /// Stops polling, stamps the end time, saves, and finishes all snapshot streams.
+    public func end() async throws -> Cook {
+        stop()
+        cook.endedAt = time.now
+        await flushSaves()
+        try await store?.save(cook)
+        publish()
+        for continuation in continuations.values { continuation.finish() }
+        continuations.removeAll()
+        return cook
+    }
+
+    public func save() async throws {
+        pollsSinceSave = 0
+        try await store?.save(cook)
+    }
+
+    private var saveChain: Task<Void, Never>?
+
+    /// Saves in the background, chained so writes land in order.
+    private func persistSoon() {
+        pollsSinceSave = 0
+        guard let store else { return }
+        let cook = cook
+        let previous = saveChain
+        saveChain = Task {
+            await previous?.value
+            try? await store.save(cook)
+        }
+    }
+
+    /// Waits for queued background saves (tests, app backgrounding).
+    public func flushSaves() async {
+        await saveChain?.value
+    }
+}

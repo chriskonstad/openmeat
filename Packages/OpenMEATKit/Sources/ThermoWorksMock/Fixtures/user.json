@@ -1,0 +1,12 @@
+{
+  "name": "projects/tw-test/databases/(default)/documents/users/test-uid",
+  "fields": {
+    "uid": { "stringValue": "test-uid" },
+    "accountId": { "stringValue": "test-account" },
+    "email": { "stringValue": "cook@example.com" },
+    "displayName": { "stringValue": "Test Cook" },
+    "preferredUnits": { "stringValue": "F" }
+  },
+  "createTime": "2024-01-01T00:00:00.000000Z",
+  "updateTime": "2026-10-01T12:00:00.123456Z"
+}

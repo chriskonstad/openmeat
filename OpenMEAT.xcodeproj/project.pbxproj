@@ -1,0 +1,918 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 77;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		122093A1687EF86B5C5E88F0 /* LiveCookModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B9EF19FCEAAE2DC444CF905 /* LiveCookModel.swift */; };
+		1E37FD16F982E0B0D76DF262 /* CookLiveActivityWidget.swift in Sources */ = {isa = PBXBuildFile; fileRef = D21A15E9BF506FC335EB6877 /* CookLiveActivityWidget.swift */; };
+		20ADEF6EBACA534A7EE28DED /* AccessibilityID.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D670848E6D138C020844EFE /* AccessibilityID.swift */; };
+		21E5910B448A0AE2CA5570CE /* CookChartView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 44E8C1E8D2D411481935C45B /* CookChartView.swift */; };
+		2D8DEB3F8B8388699B819041 /* ThermoWorksCloud in Frameworks */ = {isa = PBXBuildFile; productRef = 026F1F4CF05EBB06C51A08C1 /* ThermoWorksCloud */; };
+		342B4535F57D5BCC44C66B0F /* OpenMEATApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57C1CF9281AE6D247C58BFD0 /* OpenMEATApp.swift */; };
+		36C1451F59B0051818D69529 /* OpenMEATWidgets.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = D4095B87D057425FCF66A216 /* OpenMEATWidgets.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		402F97006327B4E314F253F6 /* AppModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB37CE8082311DBCF2286532 /* AppModelTests.swift */; };
+		46374FF7476C5C6B3E12CA78 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 4C8D76467605CE4AAEF228F5 /* Assets.xcassets */; };
+		57F2F067C5526E61A80B870D /* NotesSection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1430083D5D20600FA2D9E76D /* NotesSection.swift */; };
+		5D1E560BFEC5A7635B441DED /* CookActivityAttributes.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4985CC46D0E080F30BDF7F5D /* CookActivityAttributes.swift */; };
+		63FFD716D92B410CEA33385E /* TargetPickerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2DEC6A42339CB111DB9D901 /* TargetPickerView.swift */; };
+		6497F5919638165189E47CED /* WidgetKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E9DE1F86B4B8B91276D41E58 /* WidgetKit.framework */; };
+		658A0276797463302058C834 /* CookCore in Frameworks */ = {isa = PBXBuildFile; productRef = D3CE1237B607B163E9765285 /* CookCore */; };
+		741D40EBAD1DBFB0E587D209 /* NotificationSchedulerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4BA36A048DCA29A6BEF646A /* NotificationSchedulerTests.swift */; };
+		78FAF03683856C38071C4D8E /* ChartSeriesBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6248792E173CD8D8B13D49ED /* ChartSeriesBuilder.swift */; };
+		7D2DCB403AB734C273A8923B /* CookSession in Frameworks */ = {isa = PBXBuildFile; productRef = 986CE46C8D00ED8595E10A5E /* CookSession */; };
+		9195D61AAC5FC63BD6D74EA0 /* AccessibilityID.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D670848E6D138C020844EFE /* AccessibilityID.swift */; };
+		929621DF2EBBD4223AEA7E75 /* SwiftUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = ACCD253D113C31F3D5E4C0FD /* SwiftUI.framework */; };
+		9412EFA096F9AEA12EED6FA8 /* OpenMEATWidgetsBundle.swift in Sources */ = {isa = PBXBuildFile; fileRef = B13916380E7E5D18693BE615 /* OpenMEATWidgetsBundle.swift */; };
+		99E5DC1931F836FCAE85BFB6 /* LiveTab.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9843FDC8B79CF163A826CF24 /* LiveTab.swift */; };
+		A3F9FA9C0FD8D212243D4B07 /* CredentialStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = F1C7218E2217FCB95EFCEDD6 /* CredentialStore.swift */; };
+		A6ECF66506383019545C497B /* HistoryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 29949D5BAB287960E1E58DD8 /* HistoryView.swift */; };
+		A758A3AFBD81667A9ED8E898 /* ChartAndActivityTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F65C1C7FE7379AEC3D11CD6 /* ChartAndActivityTests.swift */; };
+		AC2F2F100F4C5884A90B91B1 /* LaunchConfigurationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C5A2AA0C887BE8891F82C3EC /* LaunchConfigurationTests.swift */; };
+		BBAF94F480C2BC7232C7454B /* OpenMEATUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 39F9256AC369D4647C4757BF /* OpenMEATUITests.swift */; };
+		BC6E2A5FCA72F13290FBF7D2 /* AppModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 63028BBB8D4A0EA5A4317492 /* AppModel.swift */; };
+		C4ACB0B35F3CF9E73253A704 /* CookActivityAttributes.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4985CC46D0E080F30BDF7F5D /* CookActivityAttributes.swift */; };
+		C65F3114DEE9264CBE10F3C2 /* LiveActivityController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6615A1589411CEF31C99A430 /* LiveActivityController.swift */; };
+		C9B0A8E769B925DEB4CDC9CA /* CookCore in Frameworks */ = {isa = PBXBuildFile; productRef = FA648DCA73095C76887E006F /* CookCore */; };
+		CAADB19FB4326D4C5679B780 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E3D2B56212E503D34C88672 /* SettingsView.swift */; };
+		CB91F349C55AD88177266F3E /* AppSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 75832A909C9D466977F761CB /* AppSettings.swift */; };
+		D37ACF5EE8E221730525FB9E /* NotificationScheduler.swift in Sources */ = {isa = PBXBuildFile; fileRef = FF938266971BE58EF5B876C9 /* NotificationScheduler.swift */; };
+		DB987BEF52E0EC24447B8E6C /* Formatting.swift in Sources */ = {isa = PBXBuildFile; fileRef = BBB7377EFC5DF8FC832294F9 /* Formatting.swift */; };
+		DCE4A9C4B6152A9B6A04E9F4 /* LoginView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3532BEBA2890BE5008F5DF56 /* LoginView.swift */; };
+		DF6188001D3DBFFEABC5F938 /* ThermoWorksMock in Frameworks */ = {isa = PBXBuildFile; productRef = CAA977BE6B9B890DDB19C6C7 /* ThermoWorksMock */; };
+		E56D92F82A4683B2E7515DEC /* LiveCookView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9AF6FF30BC51E4AAF844D22D /* LiveCookView.swift */; };
+		EB0F9236883043114BD49294 /* LaunchConfiguration.swift in Sources */ = {isa = PBXBuildFile; fileRef = A3F36A8A080CA3E2B78EEBDC /* LaunchConfiguration.swift */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		276464D5198C2B047F356313 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 0BA7E846942E7A8A7AEE8689 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = D205C85BD4FD1296BEBBEBD1;
+			remoteInfo = OpenMEAT;
+		};
+		C94B0FACE5136FDB6CE2587D /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 0BA7E846942E7A8A7AEE8689 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = D205C85BD4FD1296BEBBEBD1;
+			remoteInfo = OpenMEAT;
+		};
+		DC8FD6C04EBFBC212ABB9465 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 0BA7E846942E7A8A7AEE8689 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 6FED19665C0FDA88CE466078;
+			remoteInfo = OpenMEATWidgets;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		43220E0E5E11F7F6F927123E /* Embed Foundation Extensions */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 13;
+			files = (
+				36C1451F59B0051818D69529 /* OpenMEATWidgets.appex in Embed Foundation Extensions */,
+			);
+			name = "Embed Foundation Extensions";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
+/* Begin PBXFileReference section */
+		12F3D162F0DD713BCC88FE32 /* OpenMEAT.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = OpenMEAT.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		1430083D5D20600FA2D9E76D /* NotesSection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotesSection.swift; sourceTree = "<group>"; };
+		15839E554D055B40492C2BBD /* OpenMEATUITests.xctest */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.cfbundle; path = OpenMEATUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		1F65C1C7FE7379AEC3D11CD6 /* ChartAndActivityTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChartAndActivityTests.swift; sourceTree = "<group>"; };
+		29949D5BAB287960E1E58DD8 /* HistoryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HistoryView.swift; sourceTree = "<group>"; };
+		344DA44AE338EECDF917FFB1 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
+		3532BEBA2890BE5008F5DF56 /* LoginView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginView.swift; sourceTree = "<group>"; };
+		39F9256AC369D4647C4757BF /* OpenMEATUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OpenMEATUITests.swift; sourceTree = "<group>"; };
+		44E8C1E8D2D411481935C45B /* CookChartView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CookChartView.swift; sourceTree = "<group>"; };
+		4985CC46D0E080F30BDF7F5D /* CookActivityAttributes.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CookActivityAttributes.swift; sourceTree = "<group>"; };
+		4C8D76467605CE4AAEF228F5 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		57C1CF9281AE6D247C58BFD0 /* OpenMEATApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OpenMEATApp.swift; sourceTree = "<group>"; };
+		5E3D2B56212E503D34C88672 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
+		6248792E173CD8D8B13D49ED /* ChartSeriesBuilder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChartSeriesBuilder.swift; sourceTree = "<group>"; };
+		63028BBB8D4A0EA5A4317492 /* AppModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppModel.swift; sourceTree = "<group>"; };
+		6615A1589411CEF31C99A430 /* LiveActivityController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LiveActivityController.swift; sourceTree = "<group>"; };
+		75832A909C9D466977F761CB /* AppSettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppSettings.swift; sourceTree = "<group>"; };
+		7B9EF19FCEAAE2DC444CF905 /* LiveCookModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LiveCookModel.swift; sourceTree = "<group>"; };
+		8D670848E6D138C020844EFE /* AccessibilityID.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccessibilityID.swift; sourceTree = "<group>"; };
+		904D90FBA1C91631EBF022B1 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
+		9843FDC8B79CF163A826CF24 /* LiveTab.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LiveTab.swift; sourceTree = "<group>"; };
+		9AF6FF30BC51E4AAF844D22D /* LiveCookView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LiveCookView.swift; sourceTree = "<group>"; };
+		A2DEC6A42339CB111DB9D901 /* TargetPickerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TargetPickerView.swift; sourceTree = "<group>"; };
+		A3F36A8A080CA3E2B78EEBDC /* LaunchConfiguration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LaunchConfiguration.swift; sourceTree = "<group>"; };
+		ACCD253D113C31F3D5E4C0FD /* SwiftUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SwiftUI.framework; path = System/Library/Frameworks/SwiftUI.framework; sourceTree = SDKROOT; };
+		AECE985E782AC65F1557D9B9 /* OpenMEATKit */ = {isa = PBXFileReference; lastKnownFileType = folder; name = OpenMEATKit; path = Packages/OpenMEATKit; sourceTree = SOURCE_ROOT; };
+		B13916380E7E5D18693BE615 /* OpenMEATWidgetsBundle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OpenMEATWidgetsBundle.swift; sourceTree = "<group>"; };
+		BB37CE8082311DBCF2286532 /* AppModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppModelTests.swift; sourceTree = "<group>"; };
+		BBB7377EFC5DF8FC832294F9 /* Formatting.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Formatting.swift; sourceTree = "<group>"; };
+		BF67982054BBF336AB8D2F99 /* OpenMEATTests.xctest */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.cfbundle; path = OpenMEATTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		C5A2AA0C887BE8891F82C3EC /* LaunchConfigurationTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LaunchConfigurationTests.swift; sourceTree = "<group>"; };
+		D21A15E9BF506FC335EB6877 /* CookLiveActivityWidget.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CookLiveActivityWidget.swift; sourceTree = "<group>"; };
+		D4095B87D057425FCF66A216 /* OpenMEATWidgets.appex */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = "wrapper.app-extension"; path = OpenMEATWidgets.appex; sourceTree = BUILT_PRODUCTS_DIR; };
+		E9DE1F86B4B8B91276D41E58 /* WidgetKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WidgetKit.framework; path = System/Library/Frameworks/WidgetKit.framework; sourceTree = SDKROOT; };
+		F1C7218E2217FCB95EFCEDD6 /* CredentialStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CredentialStore.swift; sourceTree = "<group>"; };
+		F4BA36A048DCA29A6BEF646A /* NotificationSchedulerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationSchedulerTests.swift; sourceTree = "<group>"; };
+		FF938266971BE58EF5B876C9 /* NotificationScheduler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationScheduler.swift; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		0850D881CFB73A6A4BF10F47 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				658A0276797463302058C834 /* CookCore in Frameworks */,
+				6497F5919638165189E47CED /* WidgetKit.framework in Frameworks */,
+				929621DF2EBBD4223AEA7E75 /* SwiftUI.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		9DCF5198E8C9BADD0DEFFEA0 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				2D8DEB3F8B8388699B819041 /* ThermoWorksCloud in Frameworks */,
+				C9B0A8E769B925DEB4CDC9CA /* CookCore in Frameworks */,
+				7D2DCB403AB734C273A8923B /* CookSession in Frameworks */,
+				DF6188001D3DBFFEABC5F938 /* ThermoWorksMock in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		102CC4CDA928E85711D2C130 /* OpenMEATUITests */ = {
+			isa = PBXGroup;
+			children = (
+				39F9256AC369D4647C4757BF /* OpenMEATUITests.swift */,
+			);
+			path = OpenMEATUITests;
+			sourceTree = "<group>";
+		};
+		24F2AA631B02AB63680E89B3 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				ACCD253D113C31F3D5E4C0FD /* SwiftUI.framework */,
+				E9DE1F86B4B8B91276D41E58 /* WidgetKit.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		34D481BC912A25D2A19FFDD8 /* Shared */ = {
+			isa = PBXGroup;
+			children = (
+				BBB7377EFC5DF8FC832294F9 /* Formatting.swift */,
+			);
+			path = Shared;
+			sourceTree = "<group>";
+		};
+		4C63D086EAB593CAF31E08BD /* Services */ = {
+			isa = PBXGroup;
+			children = (
+				F1C7218E2217FCB95EFCEDD6 /* CredentialStore.swift */,
+				6615A1589411CEF31C99A430 /* LiveActivityController.swift */,
+				FF938266971BE58EF5B876C9 /* NotificationScheduler.swift */,
+			);
+			path = Services;
+			sourceTree = "<group>";
+		};
+		4DD5A4C4F157A3D43A33D48A /* Shared */ = {
+			isa = PBXGroup;
+			children = (
+				8D670848E6D138C020844EFE /* AccessibilityID.swift */,
+				4985CC46D0E080F30BDF7F5D /* CookActivityAttributes.swift */,
+			);
+			path = Shared;
+			sourceTree = "<group>";
+		};
+		55732EAECCDD2138E2A807F9 /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				4C8D76467605CE4AAEF228F5 /* Assets.xcassets */,
+			);
+			path = Resources;
+			sourceTree = "<group>";
+		};
+		59E4D3E759EE44E34E913F43 /* Auth */ = {
+			isa = PBXGroup;
+			children = (
+				3532BEBA2890BE5008F5DF56 /* LoginView.swift */,
+			);
+			path = Auth;
+			sourceTree = "<group>";
+		};
+		8A89F3B5F6076A73F888534F /* OpenMEATTests */ = {
+			isa = PBXGroup;
+			children = (
+				BB37CE8082311DBCF2286532 /* AppModelTests.swift */,
+				1F65C1C7FE7379AEC3D11CD6 /* ChartAndActivityTests.swift */,
+				C5A2AA0C887BE8891F82C3EC /* LaunchConfigurationTests.swift */,
+				F4BA36A048DCA29A6BEF646A /* NotificationSchedulerTests.swift */,
+			);
+			path = OpenMEATTests;
+			sourceTree = "<group>";
+		};
+		8BEE6DBB59F94BCE01F327A1 /* Chart */ = {
+			isa = PBXGroup;
+			children = (
+				6248792E173CD8D8B13D49ED /* ChartSeriesBuilder.swift */,
+				44E8C1E8D2D411481935C45B /* CookChartView.swift */,
+			);
+			path = Chart;
+			sourceTree = "<group>";
+		};
+		9A6495ADE3101CC52C99B2C9 /* App */ = {
+			isa = PBXGroup;
+			children = (
+				63028BBB8D4A0EA5A4317492 /* AppModel.swift */,
+				75832A909C9D466977F761CB /* AppSettings.swift */,
+				A3F36A8A080CA3E2B78EEBDC /* LaunchConfiguration.swift */,
+				57C1CF9281AE6D247C58BFD0 /* OpenMEATApp.swift */,
+			);
+			path = App;
+			sourceTree = "<group>";
+		};
+		AA37B5FAC167FE0893A3EA28 = {
+			isa = PBXGroup;
+			children = (
+				DF1040474E73CA6F9378E91B /* OpenMEAT */,
+				8A89F3B5F6076A73F888534F /* OpenMEATTests */,
+				102CC4CDA928E85711D2C130 /* OpenMEATUITests */,
+				D10A8FE5669CB80B428FDE54 /* OpenMEATWidgets */,
+				B0A164934C0D27D8C9CB695D /* Packages */,
+				4DD5A4C4F157A3D43A33D48A /* Shared */,
+				24F2AA631B02AB63680E89B3 /* Frameworks */,
+				F116058AD963555655D58D42 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		B0A164934C0D27D8C9CB695D /* Packages */ = {
+			isa = PBXGroup;
+			children = (
+				AECE985E782AC65F1557D9B9 /* OpenMEATKit */,
+			);
+			path = Packages;
+			sourceTree = "<group>";
+		};
+		BD144282DB024D7A9FBA0696 /* History */ = {
+			isa = PBXGroup;
+			children = (
+				29949D5BAB287960E1E58DD8 /* HistoryView.swift */,
+			);
+			path = History;
+			sourceTree = "<group>";
+		};
+		BFA3105A7676712A7915F6F0 /* Settings */ = {
+			isa = PBXGroup;
+			children = (
+				5E3D2B56212E503D34C88672 /* SettingsView.swift */,
+			);
+			path = Settings;
+			sourceTree = "<group>";
+		};
+		C80DB4CB7AA99FCB371B4FE5 /* Notes */ = {
+			isa = PBXGroup;
+			children = (
+				1430083D5D20600FA2D9E76D /* NotesSection.swift */,
+			);
+			path = Notes;
+			sourceTree = "<group>";
+		};
+		D10A8FE5669CB80B428FDE54 /* OpenMEATWidgets */ = {
+			isa = PBXGroup;
+			children = (
+				D21A15E9BF506FC335EB6877 /* CookLiveActivityWidget.swift */,
+				344DA44AE338EECDF917FFB1 /* Info.plist */,
+				B13916380E7E5D18693BE615 /* OpenMEATWidgetsBundle.swift */,
+			);
+			path = OpenMEATWidgets;
+			sourceTree = "<group>";
+		};
+		DA15246E20EE42E3C4D2B10D /* Features */ = {
+			isa = PBXGroup;
+			children = (
+				59E4D3E759EE44E34E913F43 /* Auth */,
+				8BEE6DBB59F94BCE01F327A1 /* Chart */,
+				BD144282DB024D7A9FBA0696 /* History */,
+				E97B7BBBDB40DF32A51ED2F0 /* Live */,
+				C80DB4CB7AA99FCB371B4FE5 /* Notes */,
+				BFA3105A7676712A7915F6F0 /* Settings */,
+				34D481BC912A25D2A19FFDD8 /* Shared */,
+			);
+			path = Features;
+			sourceTree = "<group>";
+		};
+		DF1040474E73CA6F9378E91B /* OpenMEAT */ = {
+			isa = PBXGroup;
+			children = (
+				904D90FBA1C91631EBF022B1 /* Info.plist */,
+				9A6495ADE3101CC52C99B2C9 /* App */,
+				DA15246E20EE42E3C4D2B10D /* Features */,
+				55732EAECCDD2138E2A807F9 /* Resources */,
+				4C63D086EAB593CAF31E08BD /* Services */,
+			);
+			path = OpenMEAT;
+			sourceTree = "<group>";
+		};
+		E97B7BBBDB40DF32A51ED2F0 /* Live */ = {
+			isa = PBXGroup;
+			children = (
+				7B9EF19FCEAAE2DC444CF905 /* LiveCookModel.swift */,
+				9AF6FF30BC51E4AAF844D22D /* LiveCookView.swift */,
+				9843FDC8B79CF163A826CF24 /* LiveTab.swift */,
+				A2DEC6A42339CB111DB9D901 /* TargetPickerView.swift */,
+			);
+			path = Live;
+			sourceTree = "<group>";
+		};
+		F116058AD963555655D58D42 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				12F3D162F0DD713BCC88FE32 /* OpenMEAT.app */,
+				BF67982054BBF336AB8D2F99 /* OpenMEATTests.xctest */,
+				15839E554D055B40492C2BBD /* OpenMEATUITests.xctest */,
+				D4095B87D057425FCF66A216 /* OpenMEATWidgets.appex */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		3A2A6317FA9609AD0F09E77B /* OpenMEATUITests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 132C2E4D125F844F89FC090F /* Build configuration list for PBXNativeTarget "OpenMEATUITests" */;
+			buildPhases = (
+				F2AD6C9BBB6289561E3DCCAA /* Sources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				E9F48DB532E9F49B666ADADA /* PBXTargetDependency */,
+			);
+			name = OpenMEATUITests;
+			packageProductDependencies = (
+			);
+			productName = OpenMEATUITests;
+			productReference = 15839E554D055B40492C2BBD /* OpenMEATUITests.xctest */;
+			productType = "com.apple.product-type.bundle.ui-testing";
+		};
+		6FED19665C0FDA88CE466078 /* OpenMEATWidgets */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 1AC890B701A5BD66C38FBB3E /* Build configuration list for PBXNativeTarget "OpenMEATWidgets" */;
+			buildPhases = (
+				0A93F1ECDA02D540609F9529 /* Sources */,
+				0850D881CFB73A6A4BF10F47 /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = OpenMEATWidgets;
+			packageProductDependencies = (
+				D3CE1237B607B163E9765285 /* CookCore */,
+			);
+			productName = OpenMEATWidgets;
+			productReference = D4095B87D057425FCF66A216 /* OpenMEATWidgets.appex */;
+			productType = "com.apple.product-type.app-extension";
+		};
+		7ADD263A8B9BB02B36B1AB42 /* OpenMEATTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 9345DBB71702EC13CCB3E82B /* Build configuration list for PBXNativeTarget "OpenMEATTests" */;
+			buildPhases = (
+				E9E5253240E419F413FDF4A1 /* Sources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				414524A9389018D294C80DC1 /* PBXTargetDependency */,
+			);
+			name = OpenMEATTests;
+			packageProductDependencies = (
+			);
+			productName = OpenMEATTests;
+			productReference = BF67982054BBF336AB8D2F99 /* OpenMEATTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
+		D205C85BD4FD1296BEBBEBD1 /* OpenMEAT */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = B3DB2F2EB886D974C18F4788 /* Build configuration list for PBXNativeTarget "OpenMEAT" */;
+			buildPhases = (
+				F5A3A382FA52767CCF44C3EC /* Sources */,
+				6BE24202D9924D3888193C50 /* Resources */,
+				9DCF5198E8C9BADD0DEFFEA0 /* Frameworks */,
+				43220E0E5E11F7F6F927123E /* Embed Foundation Extensions */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				F20140D78A0077F8C1956EEC /* PBXTargetDependency */,
+			);
+			name = OpenMEAT;
+			packageProductDependencies = (
+				026F1F4CF05EBB06C51A08C1 /* ThermoWorksCloud */,
+				FA648DCA73095C76887E006F /* CookCore */,
+				986CE46C8D00ED8595E10A5E /* CookSession */,
+				CAA977BE6B9B890DDB19C6C7 /* ThermoWorksMock */,
+			);
+			productName = OpenMEAT;
+			productReference = 12F3D162F0DD713BCC88FE32 /* OpenMEAT.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		0BA7E846942E7A8A7AEE8689 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = YES;
+				LastUpgradeCheck = 1430;
+				TargetAttributes = {
+					3A2A6317FA9609AD0F09E77B = {
+						DevelopmentTeam = "";
+						ProvisioningStyle = Automatic;
+						TestTargetID = D205C85BD4FD1296BEBBEBD1;
+					};
+					6FED19665C0FDA88CE466078 = {
+						DevelopmentTeam = "";
+						ProvisioningStyle = Automatic;
+					};
+					7ADD263A8B9BB02B36B1AB42 = {
+						DevelopmentTeam = "";
+						ProvisioningStyle = Automatic;
+					};
+					D205C85BD4FD1296BEBBEBD1 = {
+						DevelopmentTeam = "";
+						ProvisioningStyle = Automatic;
+					};
+				};
+			};
+			buildConfigurationList = DCC463ED96D7387933C64ECF /* Build configuration list for PBXProject "OpenMEAT" */;
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				Base,
+				en,
+			);
+			mainGroup = AA37B5FAC167FE0893A3EA28;
+			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				516BA594F48380A5B15589CB /* XCLocalSwiftPackageReference "Packages/OpenMEATKit" */,
+			);
+			preferredProjectObjectVersion = 77;
+			productRefGroup = F116058AD963555655D58D42 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				D205C85BD4FD1296BEBBEBD1 /* OpenMEAT */,
+				6FED19665C0FDA88CE466078 /* OpenMEATWidgets */,
+				7ADD263A8B9BB02B36B1AB42 /* OpenMEATTests */,
+				3A2A6317FA9609AD0F09E77B /* OpenMEATUITests */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		6BE24202D9924D3888193C50 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				46374FF7476C5C6B3E12CA78 /* Assets.xcassets in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		0A93F1ECDA02D540609F9529 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				5D1E560BFEC5A7635B441DED /* CookActivityAttributes.swift in Sources */,
+				1E37FD16F982E0B0D76DF262 /* CookLiveActivityWidget.swift in Sources */,
+				9412EFA096F9AEA12EED6FA8 /* OpenMEATWidgetsBundle.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		E9E5253240E419F413FDF4A1 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				402F97006327B4E314F253F6 /* AppModelTests.swift in Sources */,
+				A758A3AFBD81667A9ED8E898 /* ChartAndActivityTests.swift in Sources */,
+				AC2F2F100F4C5884A90B91B1 /* LaunchConfigurationTests.swift in Sources */,
+				741D40EBAD1DBFB0E587D209 /* NotificationSchedulerTests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		F2AD6C9BBB6289561E3DCCAA /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				20ADEF6EBACA534A7EE28DED /* AccessibilityID.swift in Sources */,
+				BBAF94F480C2BC7232C7454B /* OpenMEATUITests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		F5A3A382FA52767CCF44C3EC /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				9195D61AAC5FC63BD6D74EA0 /* AccessibilityID.swift in Sources */,
+				BC6E2A5FCA72F13290FBF7D2 /* AppModel.swift in Sources */,
+				CB91F349C55AD88177266F3E /* AppSettings.swift in Sources */,
+				78FAF03683856C38071C4D8E /* ChartSeriesBuilder.swift in Sources */,
+				C4ACB0B35F3CF9E73253A704 /* CookActivityAttributes.swift in Sources */,
+				21E5910B448A0AE2CA5570CE /* CookChartView.swift in Sources */,
+				A3F9FA9C0FD8D212243D4B07 /* CredentialStore.swift in Sources */,
+				DB987BEF52E0EC24447B8E6C /* Formatting.swift in Sources */,
+				A6ECF66506383019545C497B /* HistoryView.swift in Sources */,
+				EB0F9236883043114BD49294 /* LaunchConfiguration.swift in Sources */,
+				C65F3114DEE9264CBE10F3C2 /* LiveActivityController.swift in Sources */,
+				122093A1687EF86B5C5E88F0 /* LiveCookModel.swift in Sources */,
+				E56D92F82A4683B2E7515DEC /* LiveCookView.swift in Sources */,
+				99E5DC1931F836FCAE85BFB6 /* LiveTab.swift in Sources */,
+				DCE4A9C4B6152A9B6A04E9F4 /* LoginView.swift in Sources */,
+				57F2F067C5526E61A80B870D /* NotesSection.swift in Sources */,
+				D37ACF5EE8E221730525FB9E /* NotificationScheduler.swift in Sources */,
+				342B4535F57D5BCC44C66B0F /* OpenMEATApp.swift in Sources */,
+				CAADB19FB4326D4C5679B780 /* SettingsView.swift in Sources */,
+				63FFD716D92B410CEA33385E /* TargetPickerView.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		414524A9389018D294C80DC1 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = D205C85BD4FD1296BEBBEBD1 /* OpenMEAT */;
+			targetProxy = C94B0FACE5136FDB6CE2587D /* PBXContainerItemProxy */;
+		};
+		E9F48DB532E9F49B666ADADA /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = D205C85BD4FD1296BEBBEBD1 /* OpenMEAT */;
+			targetProxy = 276464D5198C2B047F356313 /* PBXContainerItemProxy */;
+		};
+		F20140D78A0077F8C1956EEC /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 6FED19665C0FDA88CE466078 /* OpenMEATWidgets */;
+			targetProxy = DC8FD6C04EBFBC212ABB9465 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin XCBuildConfiguration section */
+		174F5EC859F8EAC161C25894 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				INFOPLIST_FILE = OpenMEAT/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = org.openmeat.OpenMEAT;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = 1;
+			};
+			name = Debug;
+		};
+		2BB94FDB2DD4DA2DEBCEDD36 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				GENERATE_INFOPLIST_FILE = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = org.openmeat.OpenMEATUITests;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_TARGET_NAME = OpenMEAT;
+			};
+			name = Debug;
+		};
+		32D2BE4C5FB4FB8AEB65A231 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_STYLE = Automatic;
+				COPY_PHASE_STRIP = NO;
+				CURRENT_PROJECT_VERSION = 1;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				DEVELOPMENT_TEAM = "";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 18.0;
+				MARKETING_VERSION = 0.1.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				SWIFT_STRICT_CONCURRENCY = complete;
+				SWIFT_VERSION = 6.0;
+			};
+			name = Release;
+		};
+		46DD4758B6B0ABAC357E4498 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				INFOPLIST_FILE = OpenMEATWidgets/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = org.openmeat.OpenMEAT.Widgets;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = 1;
+			};
+			name = Debug;
+		};
+		5DADF6DE1148ECC2579D9995 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				INFOPLIST_FILE = OpenMEATWidgets/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = org.openmeat.OpenMEAT.Widgets;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = 1;
+			};
+			name = Release;
+		};
+		5E01B69BCEDD26507BCAE208 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				INFOPLIST_FILE = OpenMEAT/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = org.openmeat.OpenMEAT;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = 1;
+			};
+			name = Release;
+		};
+		71A0B412F1F1B568A8993625 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				GENERATE_INFOPLIST_FILE = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = org.openmeat.OpenMEATUITests;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_TARGET_NAME = OpenMEAT;
+			};
+			name = Release;
+		};
+		AA3785788AD8417B3DC6A4BE /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				GENERATE_INFOPLIST_FILE = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = org.openmeat.OpenMEATTests;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/OpenMEAT.app/OpenMEAT";
+			};
+			name = Debug;
+		};
+		C16BE30197FB758E6942B79F /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				GENERATE_INFOPLIST_FILE = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = org.openmeat.OpenMEATTests;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/OpenMEAT.app/OpenMEAT";
+			};
+			name = Release;
+		};
+		E104C32707DE05A0525C416D /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_STYLE = Automatic;
+				COPY_PHASE_STRIP = NO;
+				CURRENT_PROJECT_VERSION = 1;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				DEVELOPMENT_TEAM = "";
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"$(inherited)",
+					"DEBUG=1",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 18.0;
+				MARKETING_VERSION = 0.1.0;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_STRICT_CONCURRENCY = complete;
+				SWIFT_VERSION = 6.0;
+			};
+			name = Debug;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		132C2E4D125F844F89FC090F /* Build configuration list for PBXNativeTarget "OpenMEATUITests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				2BB94FDB2DD4DA2DEBCEDD36 /* Debug */,
+				71A0B412F1F1B568A8993625 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		1AC890B701A5BD66C38FBB3E /* Build configuration list for PBXNativeTarget "OpenMEATWidgets" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				46DD4758B6B0ABAC357E4498 /* Debug */,
+				5DADF6DE1148ECC2579D9995 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		9345DBB71702EC13CCB3E82B /* Build configuration list for PBXNativeTarget "OpenMEATTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				AA3785788AD8417B3DC6A4BE /* Debug */,
+				C16BE30197FB758E6942B79F /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		B3DB2F2EB886D974C18F4788 /* Build configuration list for PBXNativeTarget "OpenMEAT" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				174F5EC859F8EAC161C25894 /* Debug */,
+				5E01B69BCEDD26507BCAE208 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		DCC463ED96D7387933C64ECF /* Build configuration list for PBXProject "OpenMEAT" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				E104C32707DE05A0525C416D /* Debug */,
+				32D2BE4C5FB4FB8AEB65A231 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+/* End XCConfigurationList section */
+
+/* Begin XCLocalSwiftPackageReference section */
+		516BA594F48380A5B15589CB /* XCLocalSwiftPackageReference "Packages/OpenMEATKit" */ = {
+			isa = XCLocalSwiftPackageReference;
+			relativePath = Packages/OpenMEATKit;
+		};
+/* End XCLocalSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		026F1F4CF05EBB06C51A08C1 /* ThermoWorksCloud */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = ThermoWorksCloud;
+		};
+		986CE46C8D00ED8595E10A5E /* CookSession */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = CookSession;
+		};
+		CAA977BE6B9B890DDB19C6C7 /* ThermoWorksMock */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = ThermoWorksMock;
+		};
+		D3CE1237B607B163E9765285 /* CookCore */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = CookCore;
+		};
+		FA648DCA73095C76887E006F /* CookCore */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = CookCore;
+		};
+/* End XCSwiftPackageProductDependency section */
+	};
+	rootObject = 0BA7E846942E7A8A7AEE8689 /* Project object */;
+}

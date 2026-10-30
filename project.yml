@@ -1,0 +1,134 @@
+# XcodeGen spec — source of truth for OpenMEAT.xcodeproj. Run `make generate` after editing.
+name: OpenMEAT
+options:
+  bundleIdPrefix: org.openmeat
+  deploymentTarget:
+    iOS: "18.0"
+  createIntermediateGroups: true
+  developmentLanguage: en
+
+settings:
+  base:
+    SWIFT_VERSION: "6.0"
+    MARKETING_VERSION: "0.1.0"
+    CURRENT_PROJECT_VERSION: "1"
+    CODE_SIGN_STYLE: Automatic
+    # Set your team in a local, untracked xcconfig or Xcode's Signing tab.
+    DEVELOPMENT_TEAM: ""
+    ENABLE_USER_SCRIPT_SANDBOXING: YES
+    SWIFT_STRICT_CONCURRENCY: complete
+
+packages:
+  OpenMEATKit:
+    path: Packages/OpenMEATKit
+
+targets:
+  OpenMEAT:
+    type: application
+    platform: iOS
+    sources:
+      - OpenMEAT
+      - Shared
+    dependencies:
+      - package: OpenMEATKit
+        product: ThermoWorksCloud
+      - package: OpenMEATKit
+        product: CookCore
+      - package: OpenMEATKit
+        product: CookSession
+      - package: OpenMEATKit
+        product: ThermoWorksMock
+      - target: OpenMEATWidgets
+    info:
+      path: OpenMEAT/Info.plist
+      properties:
+        CFBundleDisplayName: OpenMEAT
+        UILaunchScreen: {}
+        UIApplicationSupportsIndirectInputEvents: true
+        UISupportedInterfaceOrientations: [UIInterfaceOrientationPortrait, UIInterfaceOrientationLandscapeLeft, UIInterfaceOrientationLandscapeRight]
+        NSSupportsLiveActivities: true
+        UIBackgroundModes: [fetch]
+        BGTaskSchedulerPermittedIdentifiers: [org.openmeat.OpenMEAT.refresh]
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: org.openmeat.OpenMEAT
+        ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
+        ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME: AccentColor
+        TARGETED_DEVICE_FAMILY: "1"
+
+  OpenMEATWidgets:
+    type: app-extension
+    platform: iOS
+    sources:
+      - OpenMEATWidgets
+      - path: Shared/CookActivityAttributes.swift
+    dependencies:
+      - package: OpenMEATKit
+        product: CookCore
+      - sdk: WidgetKit.framework
+      - sdk: SwiftUI.framework
+    info:
+      path: OpenMEATWidgets/Info.plist
+      properties:
+        CFBundleDisplayName: OpenMEAT
+        NSExtension:
+          NSExtensionPointIdentifier: com.apple.widgetkit-extension
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: org.openmeat.OpenMEAT.Widgets
+        TARGETED_DEVICE_FAMILY: "1"
+
+  OpenMEATTests:
+    type: bundle.unit-test
+    platform: iOS
+    sources:
+      - OpenMEATTests
+    dependencies:
+      - target: OpenMEAT
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: org.openmeat.OpenMEATTests
+        GENERATE_INFOPLIST_FILE: YES
+
+  OpenMEATUITests:
+    type: bundle.ui-testing
+    platform: iOS
+    sources:
+      - OpenMEATUITests
+      - path: Shared/AccessibilityID.swift
+    dependencies:
+      - target: OpenMEAT
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: org.openmeat.OpenMEATUITests
+        GENERATE_INFOPLIST_FILE: YES
+        TEST_TARGET_NAME: OpenMEAT
+
+schemes:
+  OpenMEAT:
+    build:
+      targets:
+        OpenMEAT: all
+    run:
+      config: Debug
+    test:
+      config: Debug
+      gatherCoverageData: true
+      coverageTargets:
+        - OpenMEAT
+      targets:
+        - OpenMEATTests
+        - OpenMEATUITests
+  # Runs the app against the simulator (no account needed): 60× speed brisket with a stall.
+  OpenMEAT Demo:
+    build:
+      targets:
+        OpenMEAT: all
+    run:
+      config: Debug
+      commandLineArguments:
+        "-OM_MOCK 1": true
+        "-OM_SCENARIO brisketStall": true
+        "-OM_TIME_SCALE 60": true
+        "-OM_POLL 1": true
+        "-OM_AUTOSTART 1": true
