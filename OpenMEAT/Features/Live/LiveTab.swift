@@ -40,23 +40,46 @@ struct StartCookView: View {
                 TextField("Title (e.g. Brisket)", text: $title)
                     .accessibilityIdentifier(AccessibilityID.StartCook.title)
             }
-            Section {
-                if isLoading && probes.isEmpty {
-                    ProgressView()
-                } else if probes.isEmpty {
-                    ContentUnavailableView("No probes found", systemImage: "thermometer.medium.slash",
-                                           description: Text(error ?? "Make sure your RFX gateway is online."))
+            if probes.isEmpty {
+                Section {
+                    if isLoading {
+                        ProgressView()
+                    } else {
+                        ContentUnavailableView("No probes found", systemImage: "thermometer.medium.slash",
+                                               description: Text(error ?? "Make sure your RFX gateway is online."))
+                    }
                 }
-                ForEach(probes) { probe in
-                    ProbeSetupRow(probe: probe, onRename: {
-                        renameText = probe.label
-                        renaming = probe
-                    })
+            }
+            let attention = devices.map(\.health).filter(\.battery.needsAttention)
+            if !attention.isEmpty {
+                Section {
+                    BatteryWarning(devices: attention)
                 }
-            } header: {
-                Text("Probes")
-            } footer: {
-                Text("Tap a sensor's role to switch between meat and ambient (pit). Names and roles are remembered for next time.")
+            }
+            // One section per device: batteries belong to devices (probes, gateway), not sensors —
+            // ambient sensors wired into the gateway sit under the gateway.
+            ForEach(sortedDevices) { discovered in
+                let deviceProbes = probes.filter { $0.key.deviceSerial == discovered.device.serial }
+                if !deviceProbes.isEmpty || discovered.device.isGateway {
+                    Section {
+                        ForEach(deviceProbes) { probe in
+                            ProbeSetupRow(probe: probe, onRename: {
+                                renameText = probe.label
+                                renaming = probe
+                            })
+                        }
+                        if deviceProbes.isEmpty {
+                            Text("No sensors connected").font(.subheadline).foregroundStyle(.secondary)
+                        }
+                    } header: {
+                        DeviceHeader(health: discovered.health)
+                    }
+                }
+            }
+            if !probes.isEmpty {
+                Section {} footer: {
+                    Text("Tap a sensor's role to switch between meat and ambient (pit). Names and roles are remembered for next time.")
+                }
             }
         }
         .navigationTitle("New cook")
@@ -84,6 +107,11 @@ struct StartCookView: View {
         }
         .task { await load() }
         .refreshable { await load() }
+    }
+
+    /// Wireless probes first, then the gateway.
+    private var sortedDevices: [DiscoveredDevice] {
+        devices.filter { !$0.device.isGateway } + devices.filter(\.device.isGateway)
     }
 
     private func load() async {
@@ -151,5 +179,42 @@ struct ProbeSwatch: View {
         }
         .frame(width: 14, height: 14)
         .accessibilityHidden(true)
+    }
+}
+
+private struct DeviceHeader: View {
+    let health: DeviceHealth
+
+    var body: some View {
+        HStack {
+            Label(health.label, systemImage: health.isGateway ? "wifi.router" : "thermometer.medium")
+                .textCase(nil)
+            Spacer()
+            BatteryBadge(health: health)
+                .textCase(nil)
+        }
+    }
+}
+
+/// Banner listing devices that need charging before a cook.
+struct BatteryWarning: View {
+    let devices: [DeviceHealth]
+
+    var body: some View {
+        Label {
+            VStack(alignment: .leading, spacing: 2) {
+                Text(devices.count == 1 ? "Low battery" : "Low batteries").font(.subheadline.bold())
+                Text(devices.map { d in "\(d.label)\(d.batteryPercent.map { " (\($0)%)" } ?? "")" }
+                    .formatted(.list(type: .and)) + " — charge before a long cook.")
+                    .font(.subheadline)
+                    .foregroundStyle(.secondary)
+            }
+        } icon: {
+            let critical = devices.contains { if case .critical = $0.battery { true } else { false } }
+            Image(systemName: critical ? "battery.0percent" : "battery.25percent")
+                .foregroundStyle(critical ? .red : .orange)
+        }
+        .accessibilityElement(children: .combine)
+        .accessibilityIdentifier(AccessibilityID.StartCook.batteryWarning)
     }
 }

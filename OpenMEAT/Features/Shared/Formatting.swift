@@ -1,4 +1,5 @@
 import CookCore
+import CookSession
 import SwiftUI
 
 enum Formatting {
@@ -99,5 +100,53 @@ struct FreshnessLabel: View {
         .foregroundStyle(warning ? .primary : .secondary)
         .accessibilityElement(children: .combine)
         .accessibilityIdentifier(AccessibilityID.Live.lastUpdated)
+    }
+}
+
+/// Battery icon + percent for a device. Status color (orange/red) only when it needs attention,
+/// always with the percent or a word, never color alone. Shows nothing for devices without a battery
+/// except the gateway, which says "No battery".
+struct BatteryBadge: View {
+    let health: DeviceHealth
+    var compact = false
+
+    var body: some View {
+        Group {
+            switch health.battery {
+            case .none:
+                if health.isGateway, !compact {
+                    Text("No battery reported").foregroundStyle(.secondary)
+                }
+            case .ok(let percent):
+                badge(symbol: Self.symbol(percent), percent: percent, word: "OK", color: .secondary)
+            case .low(let percent):
+                badge(symbol: "battery.25percent", percent: percent, word: "Low", color: .orange)
+            case .critical(let percent):
+                badge(symbol: "battery.0percent", percent: percent, word: "Critical", color: .red)
+            }
+        }
+        .font(compact ? .caption : .subheadline)
+        .accessibilityIdentifier(AccessibilityID.deviceBattery(health.serial))
+    }
+
+    private func badge(symbol: String, percent: Int?, word: String, color: Color) -> some View {
+        HStack(spacing: 3) {
+            Image(systemName: symbol)
+            Text(percent.map { "\($0)%" } ?? word).monospacedDigit()
+        }
+        .foregroundStyle(color)
+        .accessibilityElement(children: .ignore)
+        .accessibilityLabel("Battery \(percent.map { "\($0) percent" } ?? word)")
+    }
+
+    static func symbol(_ percent: Int?) -> String {
+        guard let percent else { return "battery.75percent" }
+        switch percent {
+        case 88...: return "battery.100percent"
+        case 63..<88: return "battery.75percent"
+        case 38..<63: return "battery.50percent"
+        case 13..<38: return "battery.25percent"
+        default: return "battery.0percent"
+        }
     }
 }

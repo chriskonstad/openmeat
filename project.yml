@@ -121,7 +121,7 @@ schemes:
       targets:
         - OpenMEATTests
         - OpenMEATUITests
-  # Runs the app against the simulator (no account needed): 60× speed brisket with a stall.
+  # Runs the app against the simulator (no account needed): 60× speed, gateway + two probes (brisket stall, low-battery ribs).
   OpenMEAT Demo:
     build:
       targets:
@@ -130,7 +130,7 @@ schemes:
       config: Debug
       commandLineArguments:
         "-OM_MOCK 1": true
-        "-OM_SCENARIO brisketStall": true
+        "-OM_SCENARIO gatewayAmbient": true
         "-OM_TIME_SCALE 60": true
         "-OM_POLL 1": true
         "-OM_AUTOSTART 1": true

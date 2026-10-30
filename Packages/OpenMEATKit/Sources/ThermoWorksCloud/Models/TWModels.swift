@@ -45,6 +45,12 @@ public struct TWDevice: Sendable, Equatable, Identifiable {
 
     public var isRFX: Bool { type?.lowercased() == "rfx" }
 
+    /// The RFX gateway (Wi-Fi bridge for the wireless probes; wired ambient sensors plug into it).
+    /// Matched on model/type/label until we confirm the real document shape (docs/SPEC.md §3.3).
+    public var isGateway: Bool {
+        [model, type, label].compactMap { $0?.lowercased() }.contains { $0.contains("gateway") }
+    }
+
     public init(
         serial: String, label: String? = nil, type: String? = nil, model: String? = nil,
         accountID: String? = nil, battery: Int? = nil, batteryState: String? = nil,

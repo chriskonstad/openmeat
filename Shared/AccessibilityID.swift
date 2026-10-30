@@ -2,6 +2,8 @@ import Foundation
 
 /// Accessibility identifiers shared by the app and UI tests, so tests never depend on copy.
 enum AccessibilityID {
+    static func deviceBattery(_ serial: String) -> String { "battery.\(serial)" }
+
     enum Login {
         static let email = "login.email"
         static let password = "login.password"
@@ -17,6 +19,7 @@ enum AccessibilityID {
         static func probeToggle(_ key: String) -> String { "startCook.probe.\(key)" }
         static func role(_ key: String) -> String { "startCook.role.\(key)" }
         static func rename(_ key: String) -> String { "startCook.rename.\(key)" }
+        static let batteryWarning = "startCook.batteryWarning"
     }
 
     enum Live {
@@ -29,6 +32,7 @@ enum AccessibilityID {
         static let jumpToLive = "live.jumpToLive"
         static let chartReadout = "live.chart.readout"
         static let lastUpdated = "live.lastUpdated"
+        static let batteryWarning = "live.batteryWarning"
         static let noteDetail = "live.chart.noteDetail"
         static let chartAxisMode = "live.chart.axisMode"
         static func readoutValue(_ key: String) -> String { "live.chart.readout.\(key)" }

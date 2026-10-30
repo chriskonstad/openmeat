@@ -8,15 +8,18 @@ public struct SessionSnapshot: Sendable, Equatable {
     /// Only for internal probes that have a target.
     public var estimates: [ChannelKey: Estimate]
     public var staleChannels: Set<ChannelKey>
+    /// Battery/signal for the cook's devices plus the gateway, keyed by serial. Refreshed every few minutes.
+    public var devices: [String: DeviceHealth]
     public var lastPoll: Date?
     public var lastError: String?
     public var now: Date
 
     public init(cook: Cook, estimates: [ChannelKey: Estimate] = [:], staleChannels: Set<ChannelKey> = [],
-                lastPoll: Date? = nil, lastError: String? = nil, now: Date) {
+                devices: [String: DeviceHealth] = [:], lastPoll: Date? = nil, lastError: String? = nil, now: Date) {
         self.cook = cook
         self.estimates = estimates
         self.staleChannels = staleChannels
+        self.devices = devices
         self.lastPoll = lastPoll
         self.lastError = lastError
         self.now = now
@@ -56,6 +59,8 @@ public actor LiveCookSession {
         public var ambientMaxAge: TimeInterval = 120
         /// Persist after this many poll cycles that recorded new samples.
         public var saveEveryPolls: Int = 4
+        /// Re-read device documents (battery, signal) this often, in `TimeSource` time.
+        public var deviceRefreshInterval: TimeInterval = 5 * 60
 
         public init() {}
     }
@@ -71,6 +76,8 @@ public actor LiveCookSession {
     private var lastTelemetry: [ChannelKey: Date] = [:]
     private var lastPoll: Date?
     private var lastError: String?
+    private var devices: [String: DeviceHealth] = [:]
+    private var lastDeviceRefresh: Date?
     private var pollsSinceSave = 0
     private var pollTask: Task<Void, Never>?
     private var continuations: [UUID: AsyncStream<SessionSnapshot>.Continuation] = [:]
@@ -109,7 +116,7 @@ public actor LiveCookSession {
             guard let last = cook.series[key]?.last?.time else { return lastPoll != nil }
             return now.timeIntervalSince(last) > options.staleAfter
         })
-        return SessionSnapshot(cook: cook, estimates: estimates, staleChannels: stale,
+        return SessionSnapshot(cook: cook, estimates: estimates, staleChannels: stale, devices: devices,
                                lastPoll: lastPoll, lastError: lastError, now: now)
     }
 
@@ -161,9 +168,23 @@ public actor LiveCookSession {
         } catch {
             lastError = error.localizedDescription
         }
+        await refreshDevicesIfDue()
         lastPoll = time.now
         publish()
         return snapshot()
+    }
+
+    /// Battery and signal change slowly; one extra request every few minutes keeps them current.
+    /// Failures keep the previous values (channel polling reports errors).
+    private func refreshDevicesIfDue() async {
+        let now = time.now
+        if let last = lastDeviceRefresh, now.timeIntervalSince(last) < options.deviceRefreshInterval { return }
+        guard let fetched = try? await service.devices() else { return }
+        lastDeviceRefresh = now
+        let serials = Set(cook.probes.map(\.key.deviceSerial))
+        devices = Dictionary(uniqueKeysWithValues: fetched
+            .filter { serials.contains($0.serial) || $0.isGateway }
+            .map { ($0.serial, DeviceHealth(device: $0)) })
     }
 
     func ingest(_ channels: [TWChannel]) {

@@ -39,10 +39,15 @@ public final class MockThermoWorksService: ThermoWorksService {
 
     public func devices() async throws -> [TWDevice] {
         try throwIfFailureQueued()
+        let elapsed = time.now.timeIntervalSince(startDate)
         return simulator.probes.map { probe in
-            TWDevice(serial: probe.serial, label: probe.label, type: "rfx", model: "rfx meat",
-                     accountID: "mock-account", battery: 87, batteryState: "NORMAL", signalStrength: -58,
-                     status: "NORMAL", lastSeen: time.now, transmitInterval: transmitInterval, sessionStart: startDate)
+            let battery = probe.battery(at: elapsed)
+            return TWDevice(serial: probe.serial, label: probe.label, type: "rfx",
+                            model: probe.isGateway ? "rfx gateway" : "rfx meat",
+                            accountID: "mock-account", battery: battery,
+                            batteryState: battery.map { $0 <= 20 ? "LOW" : "NORMAL" },
+                            signalStrength: probe.isGateway ? -48 : -62,
+                            status: "NORMAL", lastSeen: time.now, transmitInterval: transmitInterval, sessionStart: startDate)
         }
     }
 

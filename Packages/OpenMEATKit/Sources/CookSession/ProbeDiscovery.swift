@@ -68,6 +68,9 @@ public enum ProbeDiscovery {
             for channel in temperatureChannels {
                 let role = roles[channel.key] ?? .internal
                 let automatic: String = switch role {
+                // Wired into the gateway: name the sensor, not the gateway.
+                case .ambient where discovered.device.isGateway:
+                    temperatureChannels.count > 1 ? "Ambient \(channel.ref.number)" : "Ambient"
                 case .ambient: "\(deviceLabel) Ambient"
                 case .internal where internalCount > 1: channel.label ?? "\(deviceLabel) \(channel.ref.number)"
                 default: deviceLabel

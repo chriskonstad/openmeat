@@ -103,6 +103,11 @@ struct LiveCookView: View {
             FreshnessLabel(readingTime: snapshot.latestReadingTime,
                            readingWallClock: snapshot.latestReadingTime.map(cook.wallClock),
                            isStale: snapshot.isStale, error: snapshot.lastError)
+            let attention = snapshot.devices.values.filter(\.battery.needsAttention).sorted { $0.label < $1.label }
+            if !attention.isEmpty {
+                BatteryWarning(devices: attention)
+                    .accessibilityIdentifier(AccessibilityID.Live.batteryWarning)
+            }
         }
     }
 
@@ -141,6 +146,9 @@ struct ProbeCardView: View {
             HStack {
                 ProbeSwatch(colorIndex: probe.colorIndex, role: probe.role)
                 Text(probe.label).font(.headline).lineLimit(1)
+                if let health = snapshot.devices[probe.key.deviceSerial] {
+                    BatteryBadge(health: health, compact: true)
+                }
                 if isStale {
                     Image(systemName: "wifi.slash").foregroundStyle(.secondary).accessibilityLabel("No recent data")
                 }
@@ -193,7 +201,16 @@ struct AmbientCardView: View {
             }
             Text(snapshot.cook.latestSample(probe.key).map { $0.temperature.formatted(unit) } ?? "--")
                 .font(.title2.weight(.semibold).monospacedDigit())
-            Text("Ambient").font(.caption).foregroundStyle(.secondary)
+            HStack(spacing: 4) {
+                Text("Ambient")
+                // Wired ambient sensors run off the gateway; show its battery.
+                if let health = snapshot.devices[probe.key.deviceSerial], health.battery != .none {
+                    Text("·")
+                    Text(health.isGateway ? "Gateway" : health.label)
+                    BatteryBadge(health: health, compact: true)
+                }
+            }
+            .font(.caption).foregroundStyle(.secondary)
         }
         .padding()
         .frame(minWidth: 130, alignment: .leading)

@@ -75,7 +75,7 @@
             isEnabled = "YES">
          </CommandLineArgument>
          <CommandLineArgument
-            argument = "-OM_SCENARIO brisketStall"
+            argument = "-OM_SCENARIO gatewayAmbient"
             isEnabled = "YES">
          </CommandLineArgument>
          <CommandLineArgument

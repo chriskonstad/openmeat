@@ -3,6 +3,9 @@ import Foundation
 
 /// Named simulator setups. Selected in demo mode / UI tests via `-OM_SCENARIO <rawValue>`.
 public enum MockScenario: String, CaseIterable, Sendable {
+    /// Like a real RFX setup: a gateway with a wired ambient sensor plus two wireless meat probes
+    /// (brisket with a stall, ribs with a low battery). Default for demo mode.
+    case gatewayAmbient
     /// One RFX probe in a ~12 h brisket with a pronounced stall at ~150–160 °F, 250 °F pit.
     case brisketStall
     /// One RFX probe in a fast hot chicken cook (~1 h), 375 °F.
@@ -17,6 +20,20 @@ public enum MockScenario: String, CaseIterable, Sendable {
     public var simulator: CookSimulator {
         let f = { (fahrenheit: Double) in Temperature(fahrenheit: fahrenheit).celsius }
         switch self {
+        case .gatewayAmbient:
+            let pit = CookSimulator.AmbientProfile.ramp(start: f(70), celsius: f(250), rampSeconds: 1800)
+            return CookSimulator(probes: [
+                .init(serial: "RFX-GATEWAY", label: "RFX Gateway", ambient: pit,
+                      channels: [.init(number: "1", role: .ambient, label: "Ambient")],
+                      isGateway: true, battery: 64, batteryDrainPerHour: 2),
+                .init(serial: "RFX-BRISKET", label: "Brisket", ambient: pit,
+                      channels: [.init(number: "1", role: .internal, label: "Tip", startCelsius: f(38), k: 0.00009,
+                                       stall: .init(bandCelsius: f(150)...f(165), factor: 0.1))],
+                      battery: 92, batteryDrainPerHour: 1.5),
+                .init(serial: "RFX-RIBS", label: "Ribs", ambient: pit,
+                      channels: [.init(number: "1", role: .internal, label: "Tip", startCelsius: f(40), k: 0.00012)],
+                      battery: 14, batteryDrainPerHour: 1.5),
+            ])
         case .brisketStall:
             return CookSimulator(probes: [
                 .init(serial: "RFX-BRISKET", label: "Brisket",

@@ -26,7 +26,7 @@ struct LaunchConfigurationTests {
 
     @Test func rejectsBadValues() {
         let config = LaunchConfiguration(arguments: ["-OM_SCENARIO", "nope", "-OM_TIME_SCALE", "0", "-OM_POLL", "x"])
-        #expect(config.scenario == .brisketStall)
+        #expect(config.scenario == .gatewayAmbient)
         #expect(config.timeScale == 1)
         #expect(config.pollInterval == nil)
     }

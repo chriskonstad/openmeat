@@ -191,6 +191,26 @@ final class OpenMEATUITests: XCTestCase {
         XCTAssertTrue(axis.buttons["Elapsed"].isSelected)
     }
 
+    func testBatteriesShowBeforeStartingACook() {
+        // Gateway (wired ambient, 64%) + Brisket (92%) + Ribs (14%, low).
+        launchDemo(scenario: "gatewayAmbient")
+        let gateway = element(AccessibilityID.deviceBattery("RFX-GATEWAY"))
+        XCTAssertTrue(gateway.waitForExistence(timeout: 10))
+        // Mock batteries drain with simulated time, so check for a percent rather than an exact value.
+        XCTAssertTrue(gateway.label.contains("percent"), gateway.label)
+        XCTAssertTrue(element(AccessibilityID.deviceBattery("RFX-BRISKET")).label.contains("percent"))
+        let warning = element(AccessibilityID.StartCook.batteryWarning)
+        XCTAssertTrue(warning.exists)
+        XCTAssertTrue(warning.label.contains("Ribs"), warning.label)
+        // The wired ambient sensor is listed under the gateway with no battery of its own.
+        XCTAssertTrue(app.segmentedControls[AccessibilityID.StartCook.role("RFX-GATEWAY#1")].buttons["Ambient"].isSelected)
+
+        // Still visible once cooking.
+        let start = app.buttons[AccessibilityID.StartCook.start]
+        start.tap()
+        XCTAssertTrue(element(AccessibilityID.Live.batteryWarning).waitForExistence(timeout: 10))
+    }
+
     func testAlmostDoneLeadTimeDefaultsToFiveAndIsAdjustable() {
         launchDemo()
         app.tabBars.buttons["Settings"].tap()

@@ -6,7 +6,7 @@ import ThermoWorksMock
 struct LaunchConfiguration: Equatable {
     /// Use the simulator instead of ThermoWorks Cloud and skip sign-in.
     var useMock = false
-    var scenario: MockScenario = .brisketStall
+    var scenario: MockScenario = .gatewayAmbient
     /// Simulated seconds per real second.
     var timeScale: Double = 1
     /// Real seconds between polls (overrides settings).
@@ -37,7 +37,7 @@ struct LaunchConfiguration: Equatable {
             index = arguments.index(after: index)
         }
         useMock = values["OM_MOCK"].map(Self.bool) ?? false
-        scenario = values["OM_SCENARIO"].flatMap(MockScenario.init(rawValue:)) ?? .brisketStall
+        scenario = values["OM_SCENARIO"].flatMap(MockScenario.init(rawValue:)) ?? .gatewayAmbient
         timeScale = values["OM_TIME_SCALE"].flatMap(Double.init).map { max($0, 1) } ?? 1
         pollInterval = values["OM_POLL"].flatMap(Double.init).map { max($0, 0.1) }
         reset = values["OM_RESET"].map(Self.bool) ?? false

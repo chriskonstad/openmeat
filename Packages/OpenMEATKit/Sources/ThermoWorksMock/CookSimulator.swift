@@ -61,17 +61,31 @@ public struct CookSimulator: Sendable {
         }
     }
 
+    /// A simulated device: a wireless probe, or the gateway (whose ambient channels are wired).
     public struct Probe: Sendable, Hashable {
         public var serial: String
         public var label: String
         public var ambient: AmbientProfile
         public var channels: [Channel]
+        public var isGateway: Bool
+        /// Battery percent at the start of the cook; nil = no battery reported.
+        public var battery: Int?
+        /// Percentage points lost per hour of simulated time.
+        public var batteryDrainPerHour: Double
 
-        public init(serial: String, label: String, ambient: AmbientProfile, channels: [Channel]) {
+        public init(serial: String, label: String, ambient: AmbientProfile, channels: [Channel],
+                    isGateway: Bool = false, battery: Int? = 87, batteryDrainPerHour: Double = 0) {
             self.serial = serial
             self.label = label
             self.ambient = ambient
             self.channels = channels
+            self.isGateway = isGateway
+            self.battery = battery
+            self.batteryDrainPerHour = batteryDrainPerHour
+        }
+
+        public func battery(at elapsed: TimeInterval) -> Int? {
+            battery.map { max(0, Int((Double($0) - batteryDrainPerHour * elapsed / 3600).rounded(.down))) }
         }
     }
 

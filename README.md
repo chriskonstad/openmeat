@@ -19,7 +19,7 @@ open OpenMEAT.xcodeproj
 ```
 
 - **OpenMEAT** scheme: the real app (sign in with ThermoWorks, or tap *Try demo mode*).
-- **OpenMEAT Demo** scheme: launches straight into a running simulated cook at 60× speed (brisket with a stall, 203°F target).
+- **OpenMEAT Demo** scheme: launches straight into a running simulated cook at 60× speed: a gateway with a wired ambient sensor plus two probes (a brisket that stalls, and ribs with a low battery).
 
 To run on a device, create `Config/Signing.local.xcconfig` (git-ignored) with your team, and a bundle-ID prefix you own if `org.openmeat` is taken for you:
 
@@ -52,7 +52,7 @@ make test-live         # optional read-only smoke test against the real cloud
 
 Override the simulator with `make test-app SIM="iPhone 17" OS=26.4`.
 
-Demo/test launch arguments: `-OM_MOCK 1 -OM_SCENARIO brisketStall|chickenFast|twoProbesSteak|probeDisconnects|noAmbient -OM_TIME_SCALE 600 -OM_POLL 0.5 -OM_RESET 1 -OM_AUTOSTART 1`.
+Demo/test launch arguments: `-OM_MOCK 1 -OM_SCENARIO gatewayAmbient|brisketStall|chickenFast|twoProbesSteak|probeDisconnects|noAmbient -OM_TIME_SCALE 600 -OM_POLL 0.5 -OM_RESET 1 -OM_AUTOSTART 1`.
 
 ## License
 

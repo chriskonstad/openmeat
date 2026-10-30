@@ -34,7 +34,7 @@ or gateway configuration — use the official app for that.
 | Flow | Description |
 | --- | --- |
 | **Sign in** | Email + password for ThermoWorks Cloud. Credentials → Keychain; tokens refreshed automatically. "Demo mode" uses the mock API (also used by UI tests and App Review). |
-| **Start a cook** | Live screen lists all online probes. "Start cook" → pick which probes/channels belong to this cook, set each sensor's role (meat / ambient) and name — **remembered per channel for next time** — optional title → recording begins. Roles and names can also be changed mid-cook (long-press a card). |
+| **Start a cook** | Live screen lists all online probes grouped by device, with each device's battery (probes, gateway) and a low-battery warning; wired ambient sensors appear under the gateway. "Start cook" → pick which probes/channels belong to this cook, set each sensor's role (meat / ambient) and name — **remembered per channel for next time** — optional title → recording begins. Roles and names can also be changed mid-cook (long-press a card). |
 | **Set target** | Tap a probe card's target chip → wheel/stepper + preset list → done. Target line appears on the graph immediately; ETA starts computing. |
 | **Watch** | Live screen: probe cards (current temp, target, ETA, trend arrow, ambient) on top, interactive chart below, note bar at the bottom. |
 | **Add a note** | Tap a quick-note chip or "+" for free text. The note is time-stamped "now" (editable time) and drawn as a marker on the chart. |
@@ -97,7 +97,11 @@ values, kept in `ThermoWorksConfiguration` so they can be overridden.
 3. **History backfill**: does the web client fetch a live session's history (graph) from an endpoint
    we can call? If yes, we backfill gaps when the app was suspended. If no, gaps remain gaps (drawn as breaks).
 4. **Firestore `listen`** (streaming) viability over REST/WebChannel — would replace polling.
-5. Rate limits / ToS sensitivities. Keep polling polite (default 15 s, min 5 s, back off on errors).
+5. **Gateway and batteries**: confirmed so far — the gateway is on Wi-Fi with no local API (all TCP
+   ports closed, nothing advertised over mDNS; outbound to the cloud only). Still to confirm in the cloud data: whether the
+   gateway is its own `devices` document (we match `gateway` in model/type/label), whether wired ambient
+   sensors are channels on it, and whether `battery` is a percent for probes and the gateway.
+6. Rate limits / ToS sensitivities. Keep polling polite (default 15 s, min 5 s, back off on errors).
 
 Milestone 0 deliverable: a `capture` debug command that dumps sanitized device/channel JSON into
 `Packages/OpenMEATKit/Tests/Fixtures/` so tests run against real shapes.
