@@ -60,9 +60,16 @@ struct LiveCookSessionTests {
         #expect(estimate.eta.map { $0 > clock.now } == true)
     }
 
-    @Test func probesWithoutTargetHaveNoEstimate() async throws {
-        let (session, _, _) = try await makeSession(target: nil)
+    @Test func probesWithoutTargetHaveNoEstimateButStillARate() async throws {
+        let (session, clock, _) = try await makeSession(target: nil)
         #expect(await session.pollOnce().estimates.isEmpty)
+        for _ in 0..<40 {
+            clock.advance(by: 15)
+            await session.pollOnce()
+        }
+        let snap = await session.snapshot()
+        let key = try #require(snap.cook.probes.first { $0.role == .internal }?.key)
+        #expect((snap.rates[key] ?? 0) > 0)
     }
 
     @Test func serviceErrorsAreSurfacedThenCleared() async throws {

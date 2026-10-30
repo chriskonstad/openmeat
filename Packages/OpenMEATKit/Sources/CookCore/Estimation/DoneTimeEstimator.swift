@@ -63,4 +63,6 @@ public struct Estimate: Codable, Hashable, Sendable {
 public protocol DoneTimeEstimator: Sendable {
     mutating func ingest(_ input: EstimatorInput)
     func estimate(target: Temperature, now: Date) -> Estimate
+    /// Smoothed rate of change in °C/min, available with or without a target.
+    var celsiusPerMinute: Double? { get }
 }

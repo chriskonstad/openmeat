@@ -35,6 +35,8 @@ public struct NewtonEWMAEstimator: DoneTimeEstimator {
     public private(set) var smoothedAmbient: Double?
     private var latest: EstimatorInput?
 
+    public var celsiusPerMinute: Double? { smoothedRate.map { $0 * 60 } }
+
     public init(configuration: EstimatorConfiguration = EstimatorConfiguration()) {
         self.configuration = configuration
     }

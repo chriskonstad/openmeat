@@ -7,6 +7,8 @@ public struct SessionSnapshot: Sendable, Equatable {
     public var cook: Cook
     /// Only for internal probes that have a target.
     public var estimates: [ChannelKey: Estimate]
+    /// Smoothed °C/min for every meat probe, targeted or not.
+    public var rates: [ChannelKey: Double] = [:]
     public var staleChannels: Set<ChannelKey>
     /// Battery/signal for the cook's devices plus the gateway, keyed by serial. Refreshed every few minutes.
     public var devices: [String: DeviceHealth]
@@ -112,12 +114,18 @@ public actor LiveCookSession {
             guard let target = probe.target, let estimator = estimators[probe.key] else { continue }
             estimates[probe.key] = estimator.estimate(target: target, now: now)
         }
+        var rates: [ChannelKey: Double] = [:]
+        for (key, estimator) in estimators {
+            rates[key] = estimator.celsiusPerMinute
+        }
         let stale = Set(cook.probes.map(\.key).filter { key in
             guard let last = cook.series[key]?.last?.time else { return lastPoll != nil }
             return now.timeIntervalSince(last) > options.staleAfter
         })
-        return SessionSnapshot(cook: cook, estimates: estimates, staleChannels: stale, devices: devices,
-                               lastPoll: lastPoll, lastError: lastError, now: now)
+        var snapshot = SessionSnapshot(cook: cook, estimates: estimates, staleChannels: stale, devices: devices,
+                                       lastPoll: lastPoll, lastError: lastError, now: now)
+        snapshot.rates = rates
+        return snapshot
     }
 
     /// Emits the current snapshot immediately, then after every change.

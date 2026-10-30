@@ -174,7 +174,7 @@ struct ProbeCardView: View {
                     .font(.caption.weight(.semibold))
             }
             // Always takes its line (placeholder until the rate is known) so the layout doesn't jump.
-            Text(Formatting.rate(estimate?.celsiusPerMinute, unit: unit) ?? "–°/min")
+            Text(Formatting.rate(snapshot.rates[probe.key] ?? estimate?.celsiusPerMinute, unit: unit) ?? "–°/min")
                 .font(.caption).foregroundStyle(.secondary)
             Button(action: onTarget) {
                 Label(probe.target.map { "Target \($0.formatted(unit))" } ?? "Set target", systemImage: "target")
