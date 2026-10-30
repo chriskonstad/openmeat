@@ -70,6 +70,13 @@ enum ChartSeriesBuilder {
         return found.map { samples[$0] }
     }
 
+    /// The note closest to `time`, if within `tolerance` seconds (scrubbing near a marker).
+    static func note(near time: Date, in notes: [CookNote], tolerance: TimeInterval) -> CookNote? {
+        notes.map { ($0, abs($0.time.timeIntervalSince(time))) }
+            .filter { $0.1 <= tolerance }
+            .min { $0.1 < $1.1 }?.0
+    }
+
     /// Tick spacing giving ~4–6 labels across the visible window.
     static func tickStride(visibleLength: TimeInterval) -> TimeInterval {
         let candidates: [TimeInterval] = [5, 10, 15, 30, 60, 120, 180, 240, 360, 720].map { $0 * 60 }

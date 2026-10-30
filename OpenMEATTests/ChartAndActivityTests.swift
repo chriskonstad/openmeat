@@ -57,6 +57,36 @@ struct ChartSeriesBuilderTests {
         #expect(ChartSeriesBuilder.yDomain([]) == 0...100)
     }
 
+    @Test func noteNearScrubbedTime() {
+        let notes = [CookNote(time: t0.addingTimeInterval(600), text: "Wrapped"),
+                     CookNote(time: t0.addingTimeInterval(660), text: "Spritzed")]
+        #expect(ChartSeriesBuilder.note(near: t0.addingTimeInterval(645), in: notes, tolerance: 60)?.text == "Spritzed")
+        #expect(ChartSeriesBuilder.note(near: t0.addingTimeInterval(590), in: notes, tolerance: 60)?.text == "Wrapped")
+        #expect(ChartSeriesBuilder.note(near: t0.addingTimeInterval(3000), in: notes, tolerance: 60) == nil)
+        #expect(ChartSeriesBuilder.note(near: t0, in: [], tolerance: 60) == nil)
+    }
+
+    @Test func noteFlagsStaggerWhenTheyWouldOverlap() {
+        let a = CookNote(time: t0, text: "Wrapped"), b = CookNote(time: t0, text: "Added wood")
+        let c = CookNote(time: t0, text: "Flipped")
+        let flags = NoteFlagLayout.place([(a, 100), (b, 130), (c, 300)], plotWidth: 350)
+        #expect(flags.map(\.row) == [0, 1, 0])
+        // Kept inside the plot even when the marker is at the edge.
+        let edge = NoteFlagLayout.place([(a, 2), (b, 349)], plotWidth: 350)
+        #expect(edge[0].x >= NoteFlagLayout.estimatedWidth("Wrapped") / 2)
+        #expect(edge[1].x <= 350 - NoteFlagLayout.estimatedWidth("Added wood") / 2)
+        // Off-screen markers get no flag.
+        #expect(NoteFlagLayout.place([(a, -10), (b, 400)], plotWidth: 350).isEmpty)
+    }
+
+    @Test func tappingNearAMarkerFindsItsNote() {
+        let a = CookNote(time: t0, text: "Wrapped"), b = CookNote(time: t0, text: "Spritzed")
+        let positions: [(CookNote, CGFloat)] = [(a, 100), (b, 160)]
+        #expect(NoteFlagLayout.hit(x: 110, positions: positions, tolerance: 26)?.text == "Wrapped")
+        #expect(NoteFlagLayout.hit(x: 140, positions: positions, tolerance: 26)?.text == "Spritzed")
+        #expect(NoteFlagLayout.hit(x: 300, positions: positions, tolerance: 26) == nil)
+    }
+
     @Test func fullResolutionSampleLookup() {
         let samples = cook(samples: 10).series[meat]!
         #expect(ChartSeriesBuilder.sample(at: t0.addingTimeInterval(-1), in: samples) == nil)

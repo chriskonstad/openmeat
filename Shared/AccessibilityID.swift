@@ -29,6 +29,7 @@ enum AccessibilityID {
         static let jumpToLive = "live.jumpToLive"
         static let chartReadout = "live.chart.readout"
         static let lastUpdated = "live.lastUpdated"
+        static let noteDetail = "live.chart.noteDetail"
         static let chartAxisMode = "live.chart.axisMode"
         static func readoutValue(_ key: String) -> String { "live.chart.readout.\(key)" }
         static func probeCard(_ key: String) -> String { "live.probe.\(key)" }

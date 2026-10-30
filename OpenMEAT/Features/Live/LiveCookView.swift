@@ -153,9 +153,9 @@ struct ProbeCardView: View {
                 Text("as of \(latest.time.formatted(date: .omitted, time: .shortened))")
                     .font(.caption.weight(.semibold))
             }
-            if let rate = Formatting.rate(estimate?.celsiusPerMinute, unit: unit) {
-                Text(rate).font(.caption).foregroundStyle(.secondary)
-            }
+            // Always takes its line (placeholder until the rate is known) so the layout doesn't jump.
+            Text(Formatting.rate(estimate?.celsiusPerMinute, unit: unit) ?? "–°/min")
+                .font(.caption).foregroundStyle(.secondary)
             Button(action: onTarget) {
                 Label(probe.target.map { "Target \($0.formatted(unit))" } ?? "Set target", systemImage: "target")
                     .font(.subheadline.bold())

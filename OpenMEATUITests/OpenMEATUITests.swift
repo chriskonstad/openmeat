@@ -100,6 +100,9 @@ final class OpenMEATUITests: XCTestCase {
         XCTAssertTrue(wrapped.waitForExistence(timeout: 5))
         wrapped.tap()
         XCTAssertTrue(element(AccessibilityID.Notes.list).staticTexts["Wrapped"].waitForExistence(timeout: 5))
+
+        // Tapping the marker is covered by NoteFlagLayout unit tests plus manual checks: Swift Charts
+        // doesn't expose annotation content to XCUITest.
     }
 
     func testFreeTextNote() {

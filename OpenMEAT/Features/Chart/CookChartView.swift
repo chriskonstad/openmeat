@@ -9,7 +9,8 @@ import SwiftUI
 /// - long-press-drag to scrub
 /// - follows "now" until you pan away; "Live" jumps back
 /// - clock or elapsed-time axis with aligned, unclipped labels
-/// - target rules, ETA projection, note markers
+/// - target rules, ETA projection
+/// - labeled note markers: tap one (or scrub near it) to read the whole note above the plot
 struct CookChartView: View {
     @Environment(AppSettings.self) private var settings
     let cook: Cook
@@ -28,6 +29,8 @@ struct CookChartView: View {
     @State private var scrollPosition: Date = .distantPast
     @State private var programmaticScroll = false
     @State private var selectedTime: Date?
+    @State private var focusedNoteID: UUID?
+    @State private var plotWidth: CGFloat = 300
     @State private var pinchBase: TimeInterval?
 
     private var start: Date { cook.startedAt }
@@ -49,7 +52,8 @@ struct CookChartView: View {
         VStack(alignment: .leading, spacing: 8) {
             ChartReadout(cook: cook, unit: unit, selectedTime: selectedTime, isLive: isLive,
                          elapsed: settings.chartShowsElapsedTime, staleChannels: staleChannels,
-                         wallClock: wallClock, hidden: $hidden)
+                         wallClock: wallClock, note: shownNote, isNotePinned: focusedNoteID != nil,
+                         onDismissNote: { focusedNoteID = nil }, hidden: $hidden)
             chart(series)
         }
         .onAppear {
@@ -67,6 +71,26 @@ struct CookChartView: View {
             // The user scrolled: keep following only if they're (back) at the live edge.
             followLive = newValue >= liveEdge.addingTimeInterval(-effectiveLength * 0.02)
         }
+    }
+
+    /// Approximate on-screen x of each note's marker (plot starts at the leading edge).
+    private var notePositions: [(CookNote, CGFloat)] {
+        let visibleStart = max(scrollPosition, start)
+        return cook.notes.map { note in
+            (note, CGFloat(note.time.timeIntervalSince(visibleStart) / effectiveLength) * plotWidth)
+        }
+    }
+
+    /// Flag rows for notes in view.
+    private var noteRows: [UUID: Int] {
+        Dictionary(uniqueKeysWithValues: NoteFlagLayout.place(notePositions, plotWidth: plotWidth).map { ($0.note.id, $0.row) })
+    }
+
+    /// The note shown in the readout: the one the user tapped, else one close to the scrubbed time.
+    private var shownNote: CookNote? {
+        if let focusedNoteID, let note = cook.notes.first(where: { $0.id == focusedNoteID }) { return note }
+        guard let selectedTime else { return nil }
+        return ChartSeriesBuilder.note(near: selectedTime, in: cook.notes, tolerance: effectiveLength * 0.03)
     }
 
     private func jumpToLive() {
@@ -106,12 +130,19 @@ struct CookChartView: View {
                 }
             }
             ForEach(cook.notes) { note in
+                let isFocused = note.id == shownNote?.id
                 RuleMark(x: .value("Note", note.time))
-                    .foregroundStyle(.secondary.opacity(0.35))
-                    .annotation(position: .bottom, alignment: .center, spacing: 0) {
-                        Image(systemName: "note.text").font(.caption2).foregroundStyle(.secondary)
-                            .accessibilityLabel("Note: \(note.text)")
+                    .foregroundStyle(.primary.opacity(isFocused ? 0.7 : 0.3))
+                    .lineStyle(StrokeStyle(lineWidth: isFocused ? 1.5 : 1, dash: [3, 3]))
+                    .annotation(position: .overlay, alignment: .top, spacing: 0,
+                                overflowResolution: .init(x: .fit(to: .chart), y: .disabled)) {
+                        // Staggered onto a second row when it would overlap a neighbor. Annotations
+                        // aren't interactive; taps are hit-tested by the chart's tap gesture.
+                        NoteFlag(text: note.text, isFocused: isFocused)
+                            .offset(y: CGFloat(noteRows[note.id] ?? 0) * 22)
                     }
+                    .accessibilityLabel("Note")
+                    .accessibilityValue(note.text)
             }
             if let selectedTime {
                 RuleMark(x: .value("Selected", selectedTime))
@@ -146,6 +177,9 @@ struct CookChartView: View {
             }
         }
         .chartLegend(.hidden)
+        .onGeometryChange(for: CGFloat.self) { $0.size.width } action: { width in
+            plotWidth = max(width - 44, 100) // minus the trailing Y-axis labels
+        }
         .gesture(
             MagnifyGesture()
                 .onChanged { value in
@@ -162,6 +196,12 @@ struct CookChartView: View {
             if !fitAll { visibleLength = 30 * 60 }
             jumpToLive()
         }
+        // Tap a note marker to read it in the readout; tap elsewhere to dismiss. Simultaneous, because
+        // the chart's scroll/selection gestures otherwise swallow single taps.
+        .simultaneousGesture(SpatialTapGesture(count: 1, coordinateSpace: .local).onEnded { value in
+            let hit = NoteFlagLayout.hit(x: value.location.x, positions: notePositions, tolerance: 26)
+            focusedNoteID = hit.map { $0.id == focusedNoteID ? nil : $0.id } ?? nil
+        })
         .overlay(alignment: .topTrailing) {
             if isLive, !followLive {
                 Button("Live", systemImage: "forward.end.fill") { jumpToLive() }
@@ -175,8 +215,8 @@ struct CookChartView: View {
     private func isLabelSafelyVisible(_ date: Date) -> Bool {
         let visibleStart = max(scrollPosition, start)
         let inset = effectiveLength * 0.09
-        return date >= visibleStart.addingTimeInterval(inset)
-            && date <= visibleStart.addingTimeInterval(effectiveLength - inset)
+        let visibleEnd = min(visibleStart.addingTimeInterval(effectiveLength), domainEnd)
+        return date >= visibleStart.addingTimeInterval(inset) && date <= visibleEnd.addingTimeInterval(-inset)
     }
 
     private func axisLabel(_ date: Date) -> String {
@@ -198,10 +238,16 @@ private struct ChartReadout: View {
     let elapsed: Bool
     let staleChannels: Set<ChannelKey>
     let wallClock: @Sendable (Date) -> Date
+    let note: CookNote?
+    let isNotePinned: Bool
+    let onDismissNote: () -> Void
     @Binding var hidden: Set<ChannelKey>
 
     var body: some View {
         VStack(alignment: .leading, spacing: 6) {
+            if let note {
+                noteRow(note)
+            }
             HStack(alignment: .firstTextBaseline) {
                 timeHeader
                 Spacer()
@@ -223,6 +269,25 @@ private struct ChartReadout: View {
         }
         .accessibilityElement(children: .contain)
         .accessibilityIdentifier(AccessibilityID.Live.chartReadout)
+    }
+
+    private func noteRow(_ note: CookNote) -> some View {
+        HStack(alignment: .firstTextBaseline, spacing: 6) {
+            Image(systemName: "note.text")
+            Text(timeLabel(note.time)).monospacedDigit().foregroundStyle(.secondary)
+            Text(note.text).fontWeight(.semibold).frame(maxWidth: .infinity, alignment: .leading)
+            if isNotePinned {
+                Button("Close note", systemImage: "xmark.circle.fill", action: onDismissNote)
+                    .labelStyle(.iconOnly)
+                    .foregroundStyle(.secondary)
+            }
+        }
+        .font(.caption)
+        .padding(.horizontal, 10)
+        .padding(.vertical, 6)
+        .background(.background.secondary, in: RoundedRectangle(cornerRadius: 10))
+        .accessibilityElement(children: .combine)
+        .accessibilityIdentifier(AccessibilityID.Live.noteDetail)
     }
 
     /// Scrubbing: the selected moment. Otherwise how fresh the newest reading is (live), or when the cook ended.
@@ -263,8 +328,13 @@ private struct ChartReadout: View {
             HStack(spacing: 5) {
                 ProbeSwatch(colorIndex: probe.colorIndex, role: probe.role)
                 Text(probe.label).foregroundStyle(.secondary)
-                Text(valueText).monospacedDigit().foregroundStyle(isStale ? .secondary : .primary)
-                    .accessibilityIdentifier(AccessibilityID.Live.readoutValue(probe.key.description))
+                // Fixed width (sized for the widest plausible value) so chips don't re-wrap as numbers grow.
+                ZStack(alignment: .leading) {
+                    Text("888.8°F").hidden()
+                    Text(valueText).foregroundStyle(isStale ? .secondary : .primary)
+                }
+                .monospacedDigit()
+                .accessibilityIdentifier(AccessibilityID.Live.readoutValue(probe.key.description))
                 if probe.role == .internal, let target = probe.target {
                     Text("→ \(target.formatted(unit))").foregroundStyle(.secondary)
                 }
@@ -326,5 +396,64 @@ struct FlowLayout: Layout {
             rows[rows.count - 1] = row
         }
         return rows
+    }
+}
+
+/// Label at the top of a note's marker line, so markers explain themselves.
+private struct NoteFlag: View {
+    let text: String
+    let isFocused: Bool
+
+    static func shortText(_ text: String) -> String {
+        text.count > 14 ? String(text.prefix(13)).trimmingCharacters(in: .whitespaces) + "…" : text
+    }
+
+    var body: some View {
+        HStack(spacing: 3) {
+            Image(systemName: "note.text")
+            Text(Self.shortText(text))
+        }
+        .font(.caption2.weight(isFocused ? .semibold : .regular))
+        .foregroundStyle(isFocused ? .primary : .secondary)
+        .padding(.horizontal, 5)
+        .padding(.vertical, 2)
+        .background(.background, in: Capsule())
+        .overlay(Capsule().strokeBorder(.secondary.opacity(isFocused ? 0.8 : 0.35)))
+        .fixedSize()
+    }
+}
+
+/// Places note flags along the top of the plot: centered on their marker, kept inside the plot,
+/// and moved to a second row when they'd overlap a neighbor. Pure — unit tested.
+enum NoteFlagLayout {
+    struct Flag {
+        var note: CookNote
+        var x: CGFloat
+        var row: Int
+    }
+
+    static func estimatedWidth(_ text: String) -> CGFloat {
+        26 + CGFloat(NoteFlag.shortText(text).count) * 6.3
+    }
+
+    /// The note whose marker is nearest to a tap at `x`, if within `tolerance` points.
+    static func hit(x: CGFloat, positions: [(CookNote, CGFloat)], tolerance: CGFloat) -> CookNote? {
+        positions.map { ($0.0, abs($0.1 - x)) }
+            .filter { $0.1 <= tolerance }
+            .min { $0.1 < $1.1 }?.0
+    }
+
+    static func place(_ positioned: [(CookNote, CGFloat)], plotWidth: CGFloat, rows: Int = 2) -> [Flag] {
+        var rowEnds = Array(repeating: -CGFloat.infinity, count: rows)
+        var flags: [Flag] = []
+        for (note, markerX) in positioned.sorted(by: { $0.1 < $1.1 }) where markerX >= 0 && markerX <= plotWidth {
+            let width = estimatedWidth(note.text)
+            let x = min(max(markerX, width / 2), max(plotWidth - width / 2, width / 2))
+            let row = rowEnds.firstIndex { $0 + 4 <= x - width / 2 }
+                ?? rowEnds.indices.min { rowEnds[$0] < rowEnds[$1] }!
+            rowEnds[row] = x + width / 2
+            flags.append(Flag(note: note, x: x, row: row))
+        }
+        return flags
     }
 }

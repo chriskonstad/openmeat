@@ -63,6 +63,7 @@ targets:
     sources:
       - OpenMEATWidgets
       - path: Shared/CookActivityAttributes.swift
+      - path: Shared/Brand.swift
     dependencies:
       - package: OpenMEATKit
         product: CookCore
