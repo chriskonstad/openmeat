@@ -53,6 +53,18 @@ struct CookModelTests {
         #expect(decoded == cook)
     }
 
+    @Test func targetReachedAtIsFirstCrossing() {
+        var cook = Cook(title: "T", startedAt: t0, probes: [CookProbe(key: key, label: "M", role: .internal,
+                                                                        target: Temperature(celsius: 60))])
+        #expect(cook.targetReachedAt(key) == nil)
+        for (i, c) in [50.0, 59.9, 60.0, 58, 61].enumerated() {
+            cook.append(Sample(time: t0.addingTimeInterval(Double(i) * 60), celsius: c), to: key)
+        }
+        #expect(cook.targetReachedAt(key) == t0.addingTimeInterval(120))
+        cook.probes[0].target = nil
+        #expect(cook.targetReachedAt(key) == nil)
+    }
+
     @Test func durationUsesEndWhenFinished() {
         var cook = Cook(title: "T", startedAt: t0)
         #expect(cook.duration(asOf: t0.addingTimeInterval(60)) == 60)

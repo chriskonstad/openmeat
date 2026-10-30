@@ -160,6 +160,12 @@ public struct TWChannel: Sendable, Equatable, Identifiable {
         self.alarmLow = alarmLow
     }
 
+    /// RFX MEAT's channel 0: ThermoWorks' own core reading (the coldest of the probe's sensors).
+    public var isComputed: Bool { type?.lowercased() == "computed" }
+
+    /// One sensor along a multi-sensor probe (RFX MEAT channels 1–4, type "rfx meat sensor").
+    public var isProbeSensor: Bool { type?.lowercased().contains("sensor") ?? false }
+
     public init?(document d: FirestoreDocument) {
         // .../devices/{serial}/channels/{n}
         let path = d.pathSegments
@@ -168,7 +174,8 @@ public struct TWChannel: Sendable, Equatable, Identifiable {
         }
         self.init(
             ref: TWChannelRef(deviceSerial: path[path.count - 3], number: d["number"]?.stringValue ?? path[path.count - 1]),
-            label: d["label"]?.stringValue,
+            // Unset labels arrive as "".
+            label: d["label"]?.stringValue.flatMap { $0.isEmpty ? nil : $0 },
             type: d["type"]?.stringValue,
             value: d["value"]?.doubleValue,
             units: d["units"]?.stringValue,

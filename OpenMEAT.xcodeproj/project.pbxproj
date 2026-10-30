@@ -47,6 +47,7 @@
 		DCE4A9C4B6152A9B6A04E9F4 /* LoginView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3532BEBA2890BE5008F5DF56 /* LoginView.swift */; };
 		DF6188001D3DBFFEABC5F938 /* ThermoWorksMock in Frameworks */ = {isa = PBXBuildFile; productRef = CAA977BE6B9B890DDB19C6C7 /* ThermoWorksMock */; };
 		E0E570A5AF11DA2589A4FD8F /* Brand.swift in Sources */ = {isa = PBXBuildFile; fileRef = F77B2EAA5FE8526A012B002D /* Brand.swift */; };
+		E129606DA1F60F81A8D80F6A /* Diagnostics.swift in Sources */ = {isa = PBXBuildFile; fileRef = BDB2604B3AD095E4C42E408B /* Diagnostics.swift */; };
 		E56D92F82A4683B2E7515DEC /* LiveCookView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9AF6FF30BC51E4AAF844D22D /* LiveCookView.swift */; };
 		EB0F9236883043114BD49294 /* LaunchConfiguration.swift in Sources */ = {isa = PBXBuildFile; fileRef = A3F36A8A080CA3E2B78EEBDC /* LaunchConfiguration.swift */; };
 		EC1C3960A8880573ACE03903 /* ChannelPreferences.swift in Sources */ = {isa = PBXBuildFile; fileRef = E756487BA5669E41C9DAE9D4 /* ChannelPreferences.swift */; };
@@ -121,6 +122,7 @@
 		B13916380E7E5D18693BE615 /* OpenMEATWidgetsBundle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OpenMEATWidgetsBundle.swift; sourceTree = "<group>"; };
 		BB37CE8082311DBCF2286532 /* AppModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppModelTests.swift; sourceTree = "<group>"; };
 		BBB7377EFC5DF8FC832294F9 /* Formatting.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Formatting.swift; sourceTree = "<group>"; };
+		BDB2604B3AD095E4C42E408B /* Diagnostics.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Diagnostics.swift; sourceTree = "<group>"; };
 		BF67982054BBF336AB8D2F99 /* OpenMEATTests.xctest */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.cfbundle; path = OpenMEATTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		C5A2AA0C887BE8891F82C3EC /* LaunchConfigurationTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LaunchConfigurationTests.swift; sourceTree = "<group>"; };
 		D21A15E9BF506FC335EB6877 /* CookLiveActivityWidget.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CookLiveActivityWidget.swift; sourceTree = "<group>"; };
@@ -191,6 +193,7 @@
 				713E8B2C6A5792037EF9A8DC /* BackgroundRefresh.swift */,
 				E756487BA5669E41C9DAE9D4 /* ChannelPreferences.swift */,
 				F1C7218E2217FCB95EFCEDD6 /* CredentialStore.swift */,
+				BDB2604B3AD095E4C42E408B /* Diagnostics.swift */,
 				6615A1589411CEF31C99A430 /* LiveActivityController.swift */,
 				FF938266971BE58EF5B876C9 /* NotificationScheduler.swift */,
 			);
@@ -562,6 +565,7 @@
 				C4ACB0B35F3CF9E73253A704 /* CookActivityAttributes.swift in Sources */,
 				21E5910B448A0AE2CA5570CE /* CookChartView.swift in Sources */,
 				A3F9FA9C0FD8D212243D4B07 /* CredentialStore.swift in Sources */,
+				E129606DA1F60F81A8D80F6A /* Diagnostics.swift in Sources */,
 				DB987BEF52E0EC24447B8E6C /* Formatting.swift in Sources */,
 				A6ECF66506383019545C497B /* HistoryView.swift in Sources */,
 				EB0F9236883043114BD49294 /* LaunchConfiguration.swift in Sources */,

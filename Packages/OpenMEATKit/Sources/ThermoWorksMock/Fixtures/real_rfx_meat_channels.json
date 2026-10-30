@@ -1,0 +1,753 @@
+{
+ "documents": [
+  {
+   "name": "projects/tw-test/databases/(default)/documents/devices/M100000001/channels/0",
+   "fields": {
+    "units": {
+     "stringValue": "F"
+    },
+    "lastSeen": {
+     "timestampValue": "2026-10-29T23:03:25.910Z"
+    },
+    "minimum": {
+     "mapValue": {
+      "fields": {
+       "dateReading": {
+        "timestampValue": "2026-10-29T23:02:04.016Z"
+       },
+       "reading": {
+        "mapValue": {
+         "fields": {
+          "value": {
+           "doubleValue": 77.0999984741211
+          },
+          "units": {
+           "stringValue": "F"
+          }
+         }
+        }
+       }
+      }
+     }
+    },
+    "recentReadings": {
+     "arrayValue": {
+      "values": [
+       {
+        "mapValue": {
+         "fields": {
+          "ts": {
+           "timestampValue": "2026-10-29T23:03:26.105Z"
+          },
+          "v": {
+           "stringValue": "83.800"
+          },
+          "u": {
+           "stringValue": "F"
+          }
+         }
+        }
+       },
+       {
+        "mapValue": {
+         "fields": {
+          "ts": {
+           "timestampValue": "2026-10-29T23:03:05.641Z"
+          },
+          "v": {
+           "stringValue": "83.500"
+          },
+          "u": {
+           "stringValue": "F"
+          }
+         }
+        }
+       },
+       {
+        "mapValue": {
+         "fields": {
+          "ts": {
+           "timestampValue": "2026-10-29T23:02:38.602Z"
+          },
+          "v": {
+           "stringValue": "83.500"
+          },
+          "u": {
+           "stringValue": "F"
+          }
+         }
+        }
+       },
+       {
+        "mapValue": {
+         "fields": {
+          "ts": {
+           "timestampValue": "2026-10-29T23:02:35.484Z"
+          },
+          "v": {
+           "stringValue": "83.200"
+          },
+          "u": {
+           "stringValue": "F"
+          }
+         }
+        }
+       },
+       {
+        "mapValue": {
+         "fields": {
+          "ts": {
+           "timestampValue": "2026-10-29T23:02:32.344Z"
+          },
+          "v": {
+           "stringValue": "80.500"
+          },
+          "u": {
+           "stringValue": "F"
+          }
+         }
+        }
+       },
+       {
+        "mapValue": {
+         "fields": {
+          "ts": {
+           "timestampValue": "2026-10-29T23:02:29.303Z"
+          },
+          "v": {
+           "stringValue": "79.700"
+          },
+          "u": {
+           "stringValue": "F"
+          }
+         }
+        }
+       },
+       {
+        "mapValue": {
+         "fields": {
+          "ts": {
+           "timestampValue": "2026-10-29T23:02:26.067Z"
+          },
+          "v": {
+           "stringValue": "79.400"
+          },
+          "u": {
+           "stringValue": "F"
+          }
+         }
+        }
+       },
+       {
+        "mapValue": {
+         "fields": {
+          "ts": {
+           "timestampValue": "2026-10-29T23:02:23.146Z"
+          },
+          "v": {
+           "stringValue": "79.200"
+          },
+          "u": {
+           "stringValue": "F"
+          }
+         }
+        }
+       },
+       {
+        "mapValue": {
+         "fields": {
+          "ts": {
+           "timestampValue": "2026-10-29T23:02:20.093Z"
+          },
+          "v": {
+           "stringValue": "78.900"
+          },
+          "u": {
+           "stringValue": "F"
+          }
+         }
+        }
+       },
+       {
+        "mapValue": {
+         "fields": {
+          "ts": {
+           "timestampValue": "2026-10-29T23:02:16.907Z"
+          },
+          "v": {
+           "stringValue": "78.600"
+          },
+          "u": {
+           "stringValue": "F"
+          }
+         }
+        }
+       }
+      ]
+     }
+    },
+    "alarmHigh": {
+     "mapValue": {
+      "fields": {
+       "alarming": {
+        "booleanValue": false
+       },
+       "units": {
+        "stringValue": "F"
+       },
+       "enabled": {
+        "booleanValue": true
+       },
+       "value": {
+        "integerValue": "165"
+       },
+       "muted": {
+        "booleanValue": false
+       }
+      }
+     }
+    },
+    "status": {
+     "stringValue": "NORMAL"
+    },
+    "maximum": {
+     "mapValue": {
+      "fields": {
+       "reading": {
+        "mapValue": {
+         "fields": {
+          "units": {
+           "stringValue": "F"
+          },
+          "value": {
+           "doubleValue": 83.8000030517578
+          }
+         }
+        }
+       },
+       "dateReading": {
+        "timestampValue": "2026-10-29T23:03:25.575Z"
+       }
+      }
+     }
+    },
+    "lastTelemetrySaved": {
+     "timestampValue": "2026-10-29T23:03:25.575Z"
+    },
+    "label": {
+     "stringValue": ""
+    },
+    "enabled": {
+     "booleanValue": true
+    },
+    "estimatedAlarmStatus": {
+     "stringValue": "Estimated"
+    },
+    "color": {
+     "stringValue": "none"
+    },
+    "value": {
+     "doubleValue": 83.8000030517578
+    },
+    "type": {
+     "stringValue": "computed"
+    },
+    "number": {
+     "stringValue": "0"
+    },
+    "rateOfChange": {
+     "doubleValue": 196.06
+    },
+    "rateOfChangeUnit": {
+     "stringValue": "Hour"
+    },
+    "estimatedAlarmTime": {
+     "timestampValue": "2026-10-29T23:57:40.251Z"
+    },
+    "alarmLow": {
+     "mapValue": {
+      "fields": {
+       "value": {
+        "integerValue": "32"
+       },
+       "muted": {
+        "booleanValue": false
+       },
+       "alarming": {
+        "booleanValue": false
+       },
+       "enabled": {
+        "booleanValue": true
+       },
+       "units": {
+        "stringValue": "F"
+       }
+      }
+     }
+    }
+   },
+   "createTime": "2026-05-05T06:49:16.794460Z",
+   "updateTime": "2026-10-29T23:03:26.175688Z"
+  },
+  {
+   "name": "projects/tw-test/databases/(default)/documents/devices/M100000001/channels/1",
+   "fields": {
+    "value": {
+     "doubleValue": 87.5
+    },
+    "maximum": {
+     "mapValue": {
+      "fields": {
+       "reading": {
+        "mapValue": {
+         "fields": {
+          "value": {
+           "doubleValue": 87.5
+          },
+          "units": {
+           "stringValue": "F"
+          }
+         }
+        }
+       },
+       "dateReading": {
+        "timestampValue": "2026-10-29T23:03:25.575Z"
+       }
+      }
+     }
+    },
+    "estimatedAlarmStatus": {
+     "stringValue": "Alarm needs to be set to calculate estimated time"
+    },
+    "lastTelemetrySaved": {
+     "timestampValue": "2026-10-29T23:03:25.575Z"
+    },
+    "status": {
+     "stringValue": "NORMAL"
+    },
+    "type": {
+     "stringValue": "rfx meat sensor"
+    },
+    "lastSeen": {
+     "timestampValue": "2026-10-29T23:03:25.910Z"
+    },
+    "units": {
+     "stringValue": "F"
+    },
+    "minimum": {
+     "mapValue": {
+      "fields": {
+       "reading": {
+        "mapValue": {
+         "fields": {
+          "value": {
+           "doubleValue": 77.5999984741211
+          },
+          "units": {
+           "stringValue": "F"
+          }
+         }
+        }
+       },
+       "dateReading": {
+        "timestampValue": "2026-10-29T23:02:04.016Z"
+       }
+      }
+     }
+    },
+    "alarmLow": {
+     "mapValue": {
+      "fields": {
+       "units": {
+        "stringValue": "F"
+       },
+       "muted": {
+        "booleanValue": false
+       },
+       "enabled": {
+        "booleanValue": false
+       },
+       "value": {
+        "integerValue": "32"
+       },
+       "alarming": {
+        "booleanValue": false
+       }
+      }
+     }
+    },
+    "alarmHigh": {
+     "mapValue": {
+      "fields": {
+       "muted": {
+        "booleanValue": false
+       },
+       "enabled": {
+        "booleanValue": false
+       },
+       "value": {
+        "integerValue": "165"
+       },
+       "alarming": {
+        "booleanValue": false
+       },
+       "units": {
+        "stringValue": "F"
+       }
+      }
+     }
+    },
+    "number": {
+     "stringValue": "1"
+    }
+   },
+   "createTime": "2026-05-05T06:49:16.794460Z",
+   "updateTime": "2026-10-29T23:03:26.175688Z"
+  },
+  {
+   "name": "projects/tw-test/databases/(default)/documents/devices/M100000001/channels/2",
+   "fields": {
+    "alarmLow": {
+     "mapValue": {
+      "fields": {
+       "enabled": {
+        "booleanValue": false
+       },
+       "units": {
+        "stringValue": "F"
+       },
+       "alarming": {
+        "booleanValue": false
+       },
+       "muted": {
+        "booleanValue": false
+       },
+       "value": {
+        "integerValue": "32"
+       }
+      }
+     }
+    },
+    "lastTelemetrySaved": {
+     "timestampValue": "2026-10-29T23:03:25.575Z"
+    },
+    "value": {
+     "doubleValue": 86.9000015258789
+    },
+    "number": {
+     "stringValue": "2"
+    },
+    "units": {
+     "stringValue": "F"
+    },
+    "alarmHigh": {
+     "mapValue": {
+      "fields": {
+       "alarming": {
+        "booleanValue": false
+       },
+       "enabled": {
+        "booleanValue": false
+       },
+       "value": {
+        "integerValue": "165"
+       },
+       "muted": {
+        "booleanValue": false
+       },
+       "units": {
+        "stringValue": "F"
+       }
+      }
+     }
+    },
+    "minimum": {
+     "mapValue": {
+      "fields": {
+       "dateReading": {
+        "timestampValue": "2026-10-29T23:02:04.016Z"
+       },
+       "reading": {
+        "mapValue": {
+         "fields": {
+          "units": {
+           "stringValue": "F"
+          },
+          "value": {
+           "doubleValue": 77.6999969482422
+          }
+         }
+        }
+       }
+      }
+     }
+    },
+    "type": {
+     "stringValue": "rfx meat sensor"
+    },
+    "estimatedAlarmStatus": {
+     "stringValue": "Alarm needs to be set to calculate estimated time"
+    },
+    "lastSeen": {
+     "timestampValue": "2026-10-29T23:03:25.910Z"
+    },
+    "status": {
+     "stringValue": "NORMAL"
+    },
+    "maximum": {
+     "mapValue": {
+      "fields": {
+       "dateReading": {
+        "timestampValue": "2026-10-29T23:03:25.575Z"
+       },
+       "reading": {
+        "mapValue": {
+         "fields": {
+          "units": {
+           "stringValue": "F"
+          },
+          "value": {
+           "doubleValue": 86.9000015258789
+          }
+         }
+        }
+       }
+      }
+     }
+    }
+   },
+   "createTime": "2026-05-05T06:49:16.794460Z",
+   "updateTime": "2026-10-29T23:03:26.175688Z"
+  },
+  {
+   "name": "projects/tw-test/databases/(default)/documents/devices/M100000001/channels/3",
+   "fields": {
+    "alarmLow": {
+     "mapValue": {
+      "fields": {
+       "units": {
+        "stringValue": "F"
+       },
+       "enabled": {
+        "booleanValue": false
+       },
+       "muted": {
+        "booleanValue": false
+       },
+       "alarming": {
+        "booleanValue": false
+       },
+       "value": {
+        "integerValue": "32"
+       }
+      }
+     }
+    },
+    "minimum": {
+     "mapValue": {
+      "fields": {
+       "dateReading": {
+        "timestampValue": "2026-10-29T23:02:04.016Z"
+       },
+       "reading": {
+        "mapValue": {
+         "fields": {
+          "value": {
+           "doubleValue": 77.5999984741211
+          },
+          "units": {
+           "stringValue": "F"
+          }
+         }
+        }
+       }
+      }
+     }
+    },
+    "value": {
+     "doubleValue": 85.4000015258789
+    },
+    "type": {
+     "stringValue": "rfx meat sensor"
+    },
+    "units": {
+     "stringValue": "F"
+    },
+    "estimatedAlarmStatus": {
+     "stringValue": "Alarm needs to be set to calculate estimated time"
+    },
+    "status": {
+     "stringValue": "NORMAL"
+    },
+    "lastTelemetrySaved": {
+     "timestampValue": "2026-10-29T23:03:25.575Z"
+    },
+    "maximum": {
+     "mapValue": {
+      "fields": {
+       "reading": {
+        "mapValue": {
+         "fields": {
+          "value": {
+           "doubleValue": 85.5999984741211
+          },
+          "units": {
+           "stringValue": "F"
+          }
+         }
+        }
+       },
+       "dateReading": {
+        "timestampValue": "2026-10-29T23:03:05.165Z"
+       }
+      }
+     }
+    },
+    "number": {
+     "stringValue": "3"
+    },
+    "alarmHigh": {
+     "mapValue": {
+      "fields": {
+       "value": {
+        "integerValue": "165"
+       },
+       "muted": {
+        "booleanValue": false
+       },
+       "alarming": {
+        "booleanValue": false
+       },
+       "enabled": {
+        "booleanValue": false
+       },
+       "units": {
+        "stringValue": "F"
+       }
+      }
+     }
+    },
+    "lastSeen": {
+     "timestampValue": "2026-10-29T23:03:25.910Z"
+    }
+   },
+   "createTime": "2026-05-05T06:49:16.794460Z",
+   "updateTime": "2026-10-29T23:03:26.175688Z"
+  },
+  {
+   "name": "projects/tw-test/databases/(default)/documents/devices/M100000001/channels/4",
+   "fields": {
+    "number": {
+     "stringValue": "4"
+    },
+    "units": {
+     "stringValue": "F"
+    },
+    "alarmLow": {
+     "mapValue": {
+      "fields": {
+       "muted": {
+        "booleanValue": false
+       },
+       "value": {
+        "integerValue": "32"
+       },
+       "alarming": {
+        "booleanValue": false
+       },
+       "enabled": {
+        "booleanValue": false
+       },
+       "units": {
+        "stringValue": "F"
+       }
+      }
+     }
+    },
+    "maximum": {
+     "mapValue": {
+      "fields": {
+       "reading": {
+        "mapValue": {
+         "fields": {
+          "value": {
+           "doubleValue": 83.8000030517578
+          },
+          "units": {
+           "stringValue": "F"
+          }
+         }
+        }
+       },
+       "dateReading": {
+        "timestampValue": "2026-10-29T23:03:25.575Z"
+       }
+      }
+     }
+    },
+    "value": {
+     "doubleValue": 83.8000030517578
+    },
+    "lastSeen": {
+     "timestampValue": "2026-10-29T23:03:25.910Z"
+    },
+    "lastTelemetrySaved": {
+     "timestampValue": "2026-10-29T23:03:25.575Z"
+    },
+    "type": {
+     "stringValue": "rfx meat sensor"
+    },
+    "estimatedAlarmStatus": {
+     "stringValue": "Alarm needs to be set to calculate estimated time"
+    },
+    "alarmHigh": {
+     "mapValue": {
+      "fields": {
+       "units": {
+        "stringValue": "F"
+       },
+       "alarming": {
+        "booleanValue": false
+       },
+       "value": {
+        "integerValue": "165"
+       },
+       "muted": {
+        "booleanValue": false
+       },
+       "enabled": {
+        "booleanValue": false
+       }
+      }
+     }
+    },
+    "minimum": {
+     "mapValue": {
+      "fields": {
+       "reading": {
+        "mapValue": {
+         "fields": {
+          "units": {
+           "stringValue": "F"
+          },
+          "value": {
+           "doubleValue": 77.0999984741211
+          }
+         }
+        }
+       },
+       "dateReading": {
+        "timestampValue": "2026-10-29T23:02:04.016Z"
+       }
+      }
+     }
+    },
+    "status": {
+     "stringValue": "NORMAL"
+    }
+   },
+   "createTime": "2026-05-05T06:49:16.794460Z",
+   "updateTime": "2026-10-29T23:03:26.175688Z"
+  }
+ ]
+}

@@ -90,7 +90,8 @@ final class OpenMEATUITests: XCTestCase {
         XCTAssertTrue(app.buttons[AccessibilityID.Live.targetButton(tipKey)].label.contains("160°F"))
         // At 600× the estimator warms up (10 simulated minutes) in about a second.
         let eta = element(AccessibilityID.Live.eta(tipKey))
-        wait(for: eta, "label BEGINSWITH '~' OR label == 'Done'", timeout: 30)
+        // Either counting down to the target, or (at 600×, quickly) counting up since it was reached.
+        wait(for: eta, "label BEGINSWITH '~' OR label CONTAINS 'since target'", timeout: 30)
     }
 
     func testQuickNoteAppearsInNotes() {
@@ -209,6 +210,34 @@ final class OpenMEATUITests: XCTestCase {
         let start = app.buttons[AccessibilityID.StartCook.start]
         start.tap()
         XCTAssertTrue(element(AccessibilityID.Live.batteryWarning).waitForExistence(timeout: 10))
+    }
+
+    func testRFXProbeIsOneRowWithOptionalSensors() {
+        launchDemo(scenario: "gatewayAmbient")
+        // Each RFX MEAT is a single selectable probe (its core), not five channels.
+        let brisketCore = "RFX-BRISKET#0"
+        XCTAssertTrue(element(AccessibilityID.StartCook.probeToggle(brisketCore)).waitForExistence(timeout: 10))
+        XCTAssertFalse(element(AccessibilityID.StartCook.probeToggle("RFX-BRISKET#1")).exists)
+        XCTAssertTrue(element(AccessibilityID.StartCook.connection("RFX-BRISKET")).label.contains("Online"))
+
+        app.buttons[AccessibilityID.StartCook.start].tap()
+        let card = element(AccessibilityID.Live.probeCard(brisketCore))
+        XCTAssertTrue(card.waitForExistence(timeout: 10))
+        let toggle = app.buttons[AccessibilityID.Live.showSensors(brisketCore)]
+        XCTAssertTrue(toggle.waitForExistence(timeout: 5))
+        toggle.tap()
+        // Sensor readings appear in the readout once shown.
+        XCTAssertTrue(element(AccessibilityID.Live.legendChip("RFX-BRISKET#4")).waitForExistence(timeout: 5))
+    }
+
+    func testElapsedTimerTicksEverySecond() {
+        launchDemo(scenario: "chickenFast", timeScale: 1)
+        startCook()
+        let elapsed = element(AccessibilityID.Live.elapsed)
+        XCTAssertTrue(elapsed.waitForExistence(timeout: 5))
+        let first = elapsed.label
+        let changed = XCTNSPredicateExpectation(predicate: NSPredicate(format: "label != %@", first), object: elapsed)
+        XCTAssertEqual(XCTWaiter().wait(for: [changed], timeout: 3), .completed, "elapsed stayed at \(first)")
     }
 
     func testAlmostDoneLeadTimeDefaultsToFiveAndIsAdjustable() {

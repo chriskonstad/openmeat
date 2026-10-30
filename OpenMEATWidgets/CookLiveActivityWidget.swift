@@ -182,7 +182,13 @@ private struct ETAText: View {
     var compact = false
 
     var body: some View {
-        if let status = state.status {
+        if let reached = state.targetReachedAt {
+            // Count up: time since the target was reached.
+            HStack(spacing: 2) {
+                Text(compact ? "+" : "Done +")
+                Text(reached, style: .timer)
+            }
+        } else if let status = state.status {
             Text(status)
         } else if let eta = state.eta, eta > Date() {
             Text(timerInterval: Date()...eta, countsDown: true, showsHours: true)

@@ -27,6 +27,13 @@ enum Formatting {
         }
     }
 
+    /// Stopwatch style: "7:05", "1:12:05".
+    static func clock(_ interval: TimeInterval) -> String {
+        let seconds = max(0, Int(interval))
+        let h = seconds / 3600, m = (seconds % 3600) / 60, s = seconds % 60
+        return h > 0 ? String(format: "%d:%02d:%02d", h, m, s) : String(format: "%d:%02d", m, s)
+    }
+
     /// Compact elapsed label for chart axes: "45m", "2h", "2h30".
     static func elapsedAxis(_ interval: TimeInterval) -> String {
         let minutes = max(0, Int((interval / 60).rounded()))
@@ -54,12 +61,18 @@ enum ProbePalette {
         (0xe87ba4, 0xd55181), (0x008300, 0x008300), (0x6250d6, 0x9085e9), (0xe34948, 0xe66767),
     ]
 
+    /// Index `CookProbe.neutralColor` (an ambient shared by several probes) is neutral gray.
     static func color(_ index: Int, role: ProbeRole = .internal) -> Color {
-        let (light, dark) = slots[((index % slots.count) + slots.count) % slots.count]
+        guard index >= 0 else { return Color(UIColor.systemGray) }
+        let (light, dark) = slots[index % slots.count]
         let base = Color(UIColor { traits in
             UIColor(hex: traits.userInterfaceStyle == .dark ? dark : light)
         })
-        return role == .ambient ? base.opacity(0.55) : base
+        switch role {
+        case .ambient: return base.opacity(0.55)
+        case .sensor: return base.opacity(0.4)
+        case .internal, .unknown: return base
+        }
     }
 }
 
@@ -120,8 +133,10 @@ struct BatteryBadge: View {
             case .ok(let percent):
                 badge(symbol: Self.symbol(percent), percent: percent, word: "OK", color: .secondary)
             case .low(let percent):
-                badge(symbol: "battery.25percent", percent: percent, word: "Low", color: .orange)
+                // < 50 %: yellow-orange (the icon's amber).
+                badge(symbol: Self.symbol(percent), percent: percent, word: "Low", color: Brand.amber)
             case .critical(let percent):
+                // < 20 %: red.
                 badge(symbol: "battery.0percent", percent: percent, word: "Critical", color: .red)
             }
         }

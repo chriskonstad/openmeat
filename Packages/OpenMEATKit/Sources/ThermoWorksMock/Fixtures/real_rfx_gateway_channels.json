@@ -1,0 +1,128 @@
+{
+ "documents": [
+  {
+   "name": "projects/tw-test/databases/(default)/documents/devices/AA:BB:CC:00:00:01/channels/1",
+   "fields": {
+    "alarmHigh": {
+     "mapValue": {
+      "fields": {
+       "muted": {
+        "booleanValue": false
+       },
+       "value": {
+        "integerValue": "165"
+       },
+       "alarming": {
+        "booleanValue": false
+       },
+       "units": {
+        "stringValue": "F"
+       },
+       "enabled": {
+        "booleanValue": true
+       }
+      }
+     }
+    },
+    "units": {
+     "stringValue": "F"
+    },
+    "label": {
+     "stringValue": ""
+    },
+    "lastTelemetrySaved": {
+     "timestampValue": "2026-10-30T15:20:32.063Z"
+    },
+    "lastSeen": {
+     "timestampValue": "2026-10-30T15:20:33.090Z"
+    },
+    "number": {
+     "stringValue": "1"
+    },
+    "color": {
+     "stringValue": "none"
+    },
+    "minimum": {
+     "mapValue": {
+      "fields": {
+       "reading": {
+        "mapValue": {
+         "fields": {
+          "value": {
+           "doubleValue": 71.5999984741211
+          },
+          "units": {
+           "stringValue": "F"
+          }
+         }
+        }
+       },
+       "dateReading": {
+        "timestampValue": "2026-10-30T14:55:02.063Z"
+       }
+      }
+     }
+    },
+    "estimatedAlarmStatus": {
+     "stringValue": "Alarm needs to be set to calculate estimated time"
+    },
+    "status": {
+     "stringValue": "NORMAL"
+    },
+    "alarmLow": {
+     "mapValue": {
+      "fields": {
+       "enabled": {
+        "booleanValue": true
+       },
+       "alarming": {
+        "booleanValue": false
+       },
+       "units": {
+        "stringValue": "F"
+       },
+       "value": {
+        "integerValue": "32"
+       },
+       "muted": {
+        "booleanValue": false
+       }
+      }
+     }
+    },
+    "type": {
+     "stringValue": "Pro-Series"
+    },
+    "value": {
+     "doubleValue": 71.6999969482422
+    },
+    "enabled": {
+     "booleanValue": true
+    },
+    "maximum": {
+     "mapValue": {
+      "fields": {
+       "reading": {
+        "mapValue": {
+         "fields": {
+          "units": {
+           "stringValue": "F"
+          },
+          "value": {
+           "doubleValue": 89.6999969482422
+          }
+         }
+        }
+       },
+       "dateReading": {
+        "timestampValue": "2026-10-29T22:57:39.358Z"
+       }
+      }
+     }
+    }
+   },
+   "createTime": "2026-04-15T06:37:21.852150Z",
+   "updateTime": "2026-10-30T15:20:33.168715Z"
+  }
+ ]
+}

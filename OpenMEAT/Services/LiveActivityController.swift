@@ -14,7 +14,7 @@ extension CookActivityAttributes.ContentState {
         let status: String? = switch estimate?.state {
         case .warmingUp: "Calculating…"
         case .stalled: "Stall"
-        case .reached: "Done"
+        case .reached: nil  // shown as a count-up from `targetReachedAt`
         case .unavailable: probe?.target == nil ? nil : "No estimate"
         case .estimating, nil: nil
         }
@@ -24,6 +24,7 @@ extension CookActivityAttributes.ContentState {
             targetCelsius: probe?.target?.celsius,
             startCelsius: series?.first?.celsius,
             eta: estimate?.state == .estimating ? estimate?.eta.map(wallClock) : nil,
+            targetReachedAt: probe.flatMap { snapshot.cook.targetReachedAt($0.key) }.map(wallClock),
             status: status,
             unit: unit.rawValue,
             updatedAt: wallClock(snapshot.latestReadingTime ?? snapshot.now),
@@ -61,16 +62,25 @@ final class LiveActivityController: LiveActivityControlling {
     static let staleAfter: TimeInterval = 20 * 60
 
     func start(cookID: UUID, title: String, startedAt: Date, state: CookActivityAttributes.ContentState) {
-        guard ActivityAuthorizationInfo().areActivitiesEnabled else { return }
+        let enabled = ActivityAuthorizationInfo().areActivitiesEnabled
+        Diagnostics.log("LA start cook=\(cookID) enabled=\(enabled) existing=\(Activity<CookActivityAttributes>.activities.count)")
+        guard enabled else { return }
         reconcile(activeCookID: cookID)
         if activityID != nil {
+            Diagnostics.log("LA adopted existing activity \(activityID ?? "")")
             update(state, force: true)
             return
         }
         let attributes = CookActivityAttributes(cookID: cookID, title: title, startedAt: startedAt)
-        activityID = (try? Activity.request(
-            attributes: attributes,
-            content: .init(state: state, staleDate: Date().addingTimeInterval(Self.staleAfter))))?.id
+        do {
+            let activity = try Activity.request(
+                attributes: attributes,
+                content: .init(state: state, staleDate: Date().addingTimeInterval(Self.staleAfter)))
+            activityID = activity.id
+            Diagnostics.log("LA requested \(activity.id) state=\(activity.activityState)")
+        } catch {
+            Diagnostics.log("LA request failed: \(error)")
+        }
         lastState = state
         lastUpdate = Date()
     }
@@ -85,6 +95,7 @@ final class LiveActivityController: LiveActivityControlling {
 
     func end(_ state: CookActivityAttributes.ContentState) {
         guard let activityID else { return }
+        Diagnostics.log("LA end \(activityID)")
         self.activityID = nil
         lastState = nil
         Task { await Self.push(activityID, state, end: true) }
@@ -96,6 +107,7 @@ final class LiveActivityController: LiveActivityControlling {
                 activityID = activity.id
             } else {
                 let id = activity.id
+                Diagnostics.log("LA reconcile: ending stray \(id) for cook \(activity.attributes.cookID) (active cook \(activeCookID?.uuidString ?? "none"))")
                 Task { await Self.dismiss(id) }
             }
         }

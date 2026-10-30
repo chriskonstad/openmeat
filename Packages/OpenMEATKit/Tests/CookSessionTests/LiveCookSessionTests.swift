@@ -196,10 +196,10 @@ struct ProbeCustomizationTests {
         #expect(probes.map(\.role) == [.internal, .ambient, .internal])
         // Ribs has no ambient of its own → shares the cook's pit sensor.
         #expect(probes.map(\.pairedAmbient) == [a2, nil, a2])
-        // One color per meat probe; the ambient shares its first meat probe's color.
+        // One color per meat probe; an ambient shared by both probes is neutral.
         #expect(probes.first { $0.key == a1 }?.colorIndex == 0)
         #expect(probes.first { $0.key == b1 }?.colorIndex == 1)
-        #expect(probes.first { $0.key == a2 }?.colorIndex == 0)
+        #expect(probes.first { $0.key == a2 }?.colorIndex == CookProbe.neutralColor)
     }
 
     @Test func customizationsOverrideRoleAndLabel() {

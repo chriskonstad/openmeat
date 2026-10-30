@@ -73,10 +73,13 @@ struct LiveCookView: View {
             renameText = probe.label
             renaming = probe
         }
-        if probe.role == .ambient {
-            Button("Use as meat probe", systemImage: "thermometer.medium") { setRole(.internal, probe) }
-        } else {
-            Button("Use as ambient (pit)", systemImage: "flame") { setRole(.ambient, probe) }
+        // A multi-sensor probe is always a meat probe; single sensors can be either.
+        if snapshot.cook.sensors(of: probe.key).isEmpty {
+            if probe.role == .ambient {
+                Button("Use as meat probe", systemImage: "thermometer.medium") { setRole(.internal, probe) }
+            } else {
+                Button("Use as ambient (pit)", systemImage: "flame") { setRole(.ambient, probe) }
+            }
         }
     }
 
@@ -91,9 +94,13 @@ struct LiveCookView: View {
                 VStack(alignment: .leading) {
                     Text("Started \(snapshot.cook.startedAt.formatted(date: .omitted, time: .shortened))")
                         .font(.subheadline).foregroundStyle(.secondary)
-                    Text(Formatting.duration(snapshot.cook.duration(asOf: snapshot.now)))
-                        .font(.title2.monospacedDigit().bold())
-                        .accessibilityIdentifier(AccessibilityID.Live.elapsed)
+                    // Ticks every second between polls (stopwatch style).
+                    TimelineView(.periodic(from: .now, by: 1)) { _ in
+                        Text(Formatting.clock(snapshot.cook.duration(asOf: cook.timeSource.now)))
+                            .font(.title2.monospacedDigit().bold())
+                            .contentTransition(.numericText())
+                    }
+                    .accessibilityIdentifier(AccessibilityID.Live.elapsed)
                 }
                 Spacer()
                 if app.isDemo {
@@ -114,10 +121,13 @@ struct LiveCookView: View {
     private var probeCards: some View {
         ScrollView(.horizontal, showsIndicators: false) {
             HStack(spacing: 12) {
-                ForEach(snapshot.cook.probes.filter { $0.role != .ambient }) { probe in
-                    ProbeCardView(probe: probe, snapshot: snapshot, unit: settings.unit) {
-                        targetProbe = probe
-                    }
+                ForEach(snapshot.cook.probes.filter { $0.role == .internal || $0.role == .unknown }) { probe in
+                    ProbeCardView(probe: probe, snapshot: snapshot, unit: settings.unit, timeSource: cook.timeSource,
+                                  onTarget: { targetProbe = probe },
+                                  onToggleSensors: {
+                                      cook.setShowsSensors(!probe.showsSensors, for: probe.key)
+                                      channels.setShowsSensors(!probe.showsSensors, for: probe.key)
+                                  })
                     .contextMenu { sensorMenu(probe) }
                 }
                 ForEach(snapshot.cook.probes.filter { $0.role == .ambient }) { probe in
@@ -133,7 +143,9 @@ struct ProbeCardView: View {
     let probe: CookProbe
     let snapshot: SessionSnapshot
     let unit: TemperatureUnit
+    let timeSource: any TimeSource
     let onTarget: () -> Void
+    var onToggleSensors: () -> Void = {}
 
     private var key: String { probe.key.description }
     private var latest: Sample? { snapshot.cook.latestSample(probe.key) }
@@ -171,9 +183,37 @@ struct ProbeCardView: View {
             .buttonStyle(.bordered)
             .tint(ProbePalette.color(probe.colorIndex))
             .accessibilityIdentifier(AccessibilityID.Live.targetButton(key))
-            Text(Formatting.etaText(estimate, hasTarget: probe.target != nil, now: snapshot.now))
+            // Ticks every second: time to target, then time since target once reached.
+            let reachedAt = snapshot.cook.targetReachedAt(probe.key)
+            TimelineView(.periodic(from: .now, by: 1)) { _ in
+                let now = timeSource.now
+                Group {
+                    if let reachedAt {
+                        Label("Done · \(Formatting.clock(now.timeIntervalSince(reachedAt))) since target",
+                              systemImage: "checkmark.circle.fill")
+                    } else {
+                        Text(Formatting.etaText(estimate, hasTarget: probe.target != nil, now: now))
+                    }
+                }
                 .font(.subheadline.monospacedDigit())
-                .accessibilityIdentifier(AccessibilityID.Live.eta(key))
+            }
+            .accessibilityElement(children: .combine)
+            .accessibilityIdentifier(AccessibilityID.Live.eta(key))
+            let sensors = snapshot.cook.sensors(of: probe.key)
+            if !sensors.isEmpty {
+                Button(action: onToggleSensors) {
+                    Label("All \(sensors.count) sensors", systemImage: probe.showsSensors ? "checkmark.square.fill" : "square")
+                        .font(.caption)
+                }
+                .buttonStyle(.plain)
+                .accessibilityIdentifier(AccessibilityID.Live.showSensors(key))
+                if probe.showsSensors {
+                    SensorValues(sensors: sensors,
+                                 values: Dictionary(uniqueKeysWithValues: sensors.compactMap { s in
+                                     snapshot.cook.latestSample(s.key).map { (s.key, $0.temperature) } }),
+                                 unit: unit)
+                }
+            }
             if let ambient {
                 Label(ambient.temperature.formatted(unit), systemImage: "flame")
                     .font(.caption).foregroundStyle(.secondary)

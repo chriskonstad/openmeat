@@ -5,7 +5,7 @@ XCODEBUILD = xcodebuild -project OpenMEAT.xcodeproj -scheme OpenMEAT -destinatio
 	-derivedDataPath build/DerivedData CODE_SIGNING_ALLOWED=NO
 PACKAGE = Packages/OpenMEATKit
 
-DEVICE ?= $(shell xcrun devicectl list devices 2>/dev/null | awk '/available \(paired\)/ && /iPhone/ {for (i=1;i<=NF;i++) if ($$i ~ /^[0-9A-F]{8}-[0-9A-F]{16}$$/) {print $$i; exit}}')
+DEVICE ?= $(shell xcrun devicectl list devices 2>/dev/null | awk '/(available \(paired\)|connected)/ && /iPhone/ && /physical/ {for (i=1;i<=NF;i++) if ($$i ~ /^[0-9A-F]{8}-[0-9A-F]{16}$$/) {print $$i; exit}}')
 
 .PHONY: device generate build test test-package test-unit test-integration test-app test-app-unit test-ui test-live clean
 

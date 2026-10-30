@@ -35,10 +35,14 @@ public struct ChannelKey: Hashable, Codable, Sendable, Comparable, CustomStringC
 }
 
 public enum ProbeRole: String, Codable, Sendable, CaseIterable {
-    /// Inside the meat — can have a target and an ETA.
+    /// Inside the meat — can have a target and an ETA. For a multi-sensor probe (RFX MEAT) this is
+    /// its core reading: the coldest sensor, which ThermoWorks reports as a "computed" channel.
     case `internal`
     /// Cooker / pit air temperature.
     case ambient
+    /// One sensor along a multi-sensor probe's shaft. Shown only when the probe's "show all
+    /// sensors" is on; never has a target.
+    case sensor
     case unknown
 }
 
@@ -61,19 +65,45 @@ public struct CookProbe: Codable, Hashable, Sendable, Identifiable {
     public var label: String
     public var role: ProbeRole
     public var target: Temperature?
-    /// Ambient channel used for this probe's ETA, typically the same RFX probe's ambient sensor.
+    /// Ambient channel used for this probe's ETA (e.g. the ambient sensor wired into the gateway).
     public var pairedAmbient: ChannelKey?
-    /// Stable index into the chart palette.
+    /// Stable index into the chart palette; `ProbePalette.neutral` for an ambient shared by several probes.
     public var colorIndex: Int
+    /// For `.sensor`: the core channel of the probe it belongs to.
+    public var parent: ChannelKey?
+    /// For a multi-sensor probe's core: show its individual sensors on cards and the chart.
+    public var showsSensors: Bool
+
+    public static let neutralColor = -1
 
     public init(key: ChannelKey, label: String, role: ProbeRole, target: Temperature? = nil,
-                pairedAmbient: ChannelKey? = nil, colorIndex: Int = 0) {
+                pairedAmbient: ChannelKey? = nil, colorIndex: Int = 0, parent: ChannelKey? = nil,
+                showsSensors: Bool = false) {
         self.key = key
         self.label = label
         self.role = role
         self.target = target
         self.pairedAmbient = pairedAmbient
         self.colorIndex = colorIndex
+        self.parent = parent
+        self.showsSensors = showsSensors
+    }
+
+    private enum CodingKeys: String, CodingKey {
+        case key, label, role, target, pairedAmbient, colorIndex, parent, showsSensors
+    }
+
+    // Cooks saved before sensors existed lack `parent` / `showsSensors`.
+    public init(from decoder: any Decoder) throws {
+        let c = try decoder.container(keyedBy: CodingKeys.self)
+        key = try c.decode(ChannelKey.self, forKey: .key)
+        label = try c.decode(String.self, forKey: .label)
+        role = try c.decode(ProbeRole.self, forKey: .role)
+        target = try c.decodeIfPresent(Temperature.self, forKey: .target)
+        pairedAmbient = try c.decodeIfPresent(ChannelKey.self, forKey: .pairedAmbient)
+        colorIndex = try c.decodeIfPresent(Int.self, forKey: .colorIndex) ?? 0
+        parent = try c.decodeIfPresent(ChannelKey.self, forKey: .parent)
+        showsSensors = try c.decodeIfPresent(Bool.self, forKey: .showsSensors) ?? false
     }
 }
 
@@ -119,6 +149,25 @@ public struct Cook: Codable, Hashable, Sendable, Identifiable {
     public var isActive: Bool { endedAt == nil }
 
     public func probe(_ key: ChannelKey) -> CookProbe? { probes.first { $0.key == key } }
+
+    /// When a probe first read at or above its target (for "time since target"), or nil.
+    public func targetReachedAt(_ key: ChannelKey) -> Date? {
+        guard let target = probe(key)?.target else { return nil }
+        return series[key]?.first { $0.celsius >= target.celsius }?.time
+    }
+
+    /// The individual sensors of a multi-sensor probe, in channel order.
+    public func sensors(of key: ChannelKey) -> [CookProbe] {
+        probes.filter { $0.parent == key }
+    }
+
+    /// Probes whose lines/values are shown: everything except sensors of probes that hide them.
+    public var visibleProbes: [CookProbe] {
+        probes.filter { probe in
+            guard probe.role == .sensor else { return true }
+            return probe.parent.flatMap { self.probe($0) }?.showsSensors ?? false
+        }
+    }
 
     public func latestSample(_ key: ChannelKey) -> Sample? { series[key]?.last }
 

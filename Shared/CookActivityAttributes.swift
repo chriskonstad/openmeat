@@ -12,6 +12,8 @@ struct CookActivityAttributes: ActivityAttributes {
         /// Temperature when the cook started — progress bar origin.
         var startCelsius: Double?
         var eta: Date?
+        /// Wall-clock time the target was first reached; the activity then counts up from it.
+        var targetReachedAt: Date?
         /// Short status, e.g. "Stall", "Calculating…", "Done".
         var status: String?
         /// "F" or "C".

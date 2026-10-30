@@ -110,8 +110,19 @@ struct CookChartView: View {
                 ForEach(s.points) { p in
                     LineMark(x: .value("Time", p.time), y: .value("Temperature", p.value), series: .value("Probe", s.key.description))
                         .foregroundStyle(color)
-                        .lineStyle(s.role == .ambient ? StrokeStyle(lineWidth: 2, dash: [6, 4]) : StrokeStyle(lineWidth: 2.5))
+                        .lineStyle(Self.stroke(for: s.role))
                         .interpolationMethod(.monotone)
+                }
+                // A dot where each line ends (the latest reading), with a surface ring so it reads on top.
+                if let last = s.points.last {
+                    PointMark(x: .value("Time", last.time), y: .value("Temperature", last.value))
+                        .symbol {
+                            Circle()
+                                .fill(ProbePalette.color(s.colorIndex))
+                                .opacity(s.role == .internal ? 1 : 0.6)
+                                .frame(width: s.role == .sensor ? 6 : 10, height: s.role == .sensor ? 6 : 10)
+                                .overlay(Circle().stroke(Color(.systemBackground), lineWidth: 2))
+                        }
                 }
                 if s.role == .internal, let target = s.target {
                     // Labeled in the readout ("→ 203°"); an in-plot label would clip when scrolled.
@@ -212,6 +223,14 @@ struct CookChartView: View {
         }
     }
 
+    static func stroke(for role: ProbeRole) -> StrokeStyle {
+        switch role {
+        case .ambient: StrokeStyle(lineWidth: 2, dash: [6, 4])
+        case .sensor: StrokeStyle(lineWidth: 1.25)
+        case .internal, .unknown: StrokeStyle(lineWidth: 2.5)
+        }
+    }
+
     private func isLabelSafelyVisible(_ date: Date) -> Bool {
         let visibleStart = max(scrollPosition, start)
         let inset = effectiveLength * 0.09
@@ -262,7 +281,7 @@ private struct ChartReadout: View {
                 .accessibilityIdentifier(AccessibilityID.Live.chartAxisMode)
             }
             FlowLayout(spacing: 6) {
-                ForEach(cook.probes) { probe in
+                ForEach(cook.visibleProbes) { probe in
                     item(probe)
                 }
             }
@@ -297,8 +316,8 @@ private struct ChartReadout: View {
             Text(timeLabel(selectedTime))
                 .font(.caption.monospacedDigit().weight(.semibold))
         } else if isLive {
-            FreshnessLabel(readingTime: latestTime, readingWallClock: latestTime.map(wallClock),
-                           isStale: !cook.probes.isEmpty && cook.probes.allSatisfy { staleChannels.contains($0.key) })
+            // Freshness is shown once, in the screen header.
+            Text("Touch and hold to inspect").font(.caption).foregroundStyle(.tertiary)
         } else if let latestTime {
             Text("Last reading " + timeLabel(latestTime))
                 .font(.caption.monospacedDigit())

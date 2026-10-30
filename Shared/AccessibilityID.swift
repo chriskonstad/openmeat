@@ -20,6 +20,8 @@ enum AccessibilityID {
         static func role(_ key: String) -> String { "startCook.role.\(key)" }
         static func rename(_ key: String) -> String { "startCook.rename.\(key)" }
         static let batteryWarning = "startCook.batteryWarning"
+        static func connection(_ serial: String) -> String { "startCook.connection.\(serial)" }
+        static func showSensors(_ key: String) -> String { "startCook.showSensors.\(key)" }
     }
 
     enum Live {
@@ -33,6 +35,7 @@ enum AccessibilityID {
         static let chartReadout = "live.chart.readout"
         static let lastUpdated = "live.lastUpdated"
         static let batteryWarning = "live.batteryWarning"
+        static func showSensors(_ key: String) -> String { "live.probe.\(key).showSensors" }
         static let noteDetail = "live.chart.noteDetail"
         static let chartAxisMode = "live.chart.axisMode"
         static func readoutValue(_ key: String) -> String { "live.chart.readout.\(key)" }

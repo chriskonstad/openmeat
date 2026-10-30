@@ -68,6 +68,17 @@ public final class MockThermoWorksService: ThermoWorksService {
         }
     }
 
+    /// Channel `type` strings as ThermoWorks reports them for RFX hardware.
+    static func channelType(_ sim: CookSimulator.Channel, onGateway: Bool) -> String {
+        if sim.isComputedCore { return "computed" }
+        switch sim.role {
+        case .sensor: return "rfx meat sensor"
+        case .ambient where onGateway: return "Pro-Series"
+        case .ambient: return "ambient"
+        case .internal, .unknown: return "probe"
+        }
+    }
+
     private func channel(serial: String, _ sim: CookSimulator.Channel) -> TWChannel? {
         let elapsed = time.now.timeIntervalSince(startDate)
         // Last telemetry packet boundary.
@@ -79,7 +90,7 @@ public final class MockThermoWorksService: ThermoWorksService {
         let saved = startDate.addingTimeInterval(reportedElapsed)
         return TWChannel(
             ref: TWChannelRef(deviceSerial: serial, number: sim.number),
-            label: sim.label, type: sim.role == .ambient ? "ambient" : "probe",
+            label: sim.label, type: Self.channelType(sim, onGateway: simulator.probes.first { $0.serial == serial }?.isGateway ?? false),
             value: (fahrenheit * 10).rounded() / 10, units: "F", status: "NORMAL",
             lastSeen: saved, lastTelemetrySaved: saved)
     }

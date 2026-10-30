@@ -258,6 +258,14 @@ public actor LiveCookSession {
         publish()
     }
 
+    /// Show or hide a multi-sensor probe's individual sensors (their readings are always recorded).
+    public func setShowsSensors(_ shows: Bool, for key: ChannelKey) {
+        guard let index = cook.probes.firstIndex(where: { $0.key == key }) else { return }
+        cook.probes[index].showsSensors = shows
+        persistSoon()
+        publish()
+    }
+
     public func setLabel(_ label: String, for key: ChannelKey) {
         let trimmed = label.trimmingCharacters(in: .whitespacesAndNewlines)
         guard !trimmed.isEmpty, let index = cook.probes.firstIndex(where: { $0.key == key }) else { return }

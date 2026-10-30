@@ -48,9 +48,12 @@ public struct CookSimulator: Sendable {
         public var stall: Stall?
         /// Seconds after start when this channel stops reporting (dropout scenario).
         public var dropsOutAfter: TimeInterval?
+        /// RFX MEAT channel 0: reports the coldest of the device's `.sensor` channels.
+        public var isComputedCore: Bool
 
         public init(number: String, role: ProbeRole, label: String? = nil, startCelsius: Double = 4,
-                    k: Double = 0.00012, stall: Stall? = nil, dropsOutAfter: TimeInterval? = nil) {
+                    k: Double = 0.00012, stall: Stall? = nil, dropsOutAfter: TimeInterval? = nil,
+                    isComputedCore: Bool = false) {
             self.number = number
             self.role = role
             self.label = label
@@ -58,6 +61,7 @@ public struct CookSimulator: Sendable {
             self.k = k
             self.stall = stall
             self.dropsOutAfter = dropsOutAfter
+            self.isComputedCore = isComputedCore
         }
     }
 
@@ -107,11 +111,16 @@ public struct CookSimulator: Sendable {
               let channel = probe.channels.first(where: { $0.number == number }) else { return nil }
         if let dropout = channel.dropsOutAfter, elapsed > dropout { return nil }
         let t = max(0, elapsed)
+        if channel.isComputedCore {
+            // The device computes this from its (already noisy) sensor readings.
+            return probe.channels.filter { $0.role == .sensor }
+                .compactMap { celsius(serial: serial, channel: $0.number, at: elapsed) }.min()
+        }
         let clean: Double
         switch channel.role {
         case .ambient, .unknown:
             clean = probe.ambient.value(at: t)
-        case .internal:
+        case .internal, .sensor:
             clean = integrate(channel, ambient: probe.ambient, until: t)
         }
         return clean + noise(serial: serial, channel: number, bucket: Int(t / 15))

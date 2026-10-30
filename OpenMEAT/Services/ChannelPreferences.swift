@@ -33,8 +33,13 @@ final class ChannelPreferences {
         update(key) { $0.isIncluded = included }
     }
 
-    func isIncluded(_ key: ChannelKey) -> Bool {
-        customizations[key]?.isIncluded ?? true
+    /// `defaultValue` applies when the user hasn't chosen (e.g. offline probes default to off).
+    func isIncluded(_ key: ChannelKey, default defaultValue: Bool = true) -> Bool {
+        customizations[key]?.isIncluded ?? defaultValue
+    }
+
+    func setShowsSensors(_ shows: Bool, for key: ChannelKey) {
+        update(key) { $0.showsSensors = shows }
     }
 
     func reset() {

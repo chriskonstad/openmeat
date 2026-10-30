@@ -21,17 +21,26 @@ public enum MockScenario: String, CaseIterable, Sendable {
         let f = { (fahrenheit: Double) in Temperature(fahrenheit: fahrenheit).celsius }
         switch self {
         case .gatewayAmbient:
+            // Mirrors a real RFX setup: the gateway's wired Pro-Series port used as the pit sensor, and
+            // RFX MEAT probes reporting a computed core (channel 0 = coldest sensor) plus four sensors.
             let pit = CookSimulator.AmbientProfile.ramp(start: f(70), celsius: f(250), rampSeconds: 1800)
+            func rfxMeat(start: Double, k: Double, stall: CookSimulator.Stall? = nil) -> [CookSimulator.Channel] {
+                // Sensor 4 sits deepest and heats slowest, like the capture from a real probe.
+                [.init(number: "0", role: .internal, isComputedCore: true)]
+                    + [1.6, 1.35, 1.15, 1.0].enumerated().map { index, factor in
+                        .init(number: "\(index + 1)", role: .sensor, startCelsius: f(start) + Double(3 - index) * 0.6,
+                              k: k * factor, stall: stall)
+                    }
+            }
             return CookSimulator(probes: [
-                .init(serial: "RFX-GATEWAY", label: "RFX Gateway", ambient: pit,
-                      channels: [.init(number: "1", role: .ambient, label: "Ambient")],
+                .init(serial: "RFX-GATEWAY", label: "RFX GATEWAY", ambient: pit,
+                      channels: [.init(number: "1", role: .ambient)],
                       isGateway: true, battery: 64, batteryDrainPerHour: 2),
                 .init(serial: "RFX-BRISKET", label: "Brisket", ambient: pit,
-                      channels: [.init(number: "1", role: .internal, label: "Tip", startCelsius: f(38), k: 0.00009,
-                                       stall: .init(bandCelsius: f(150)...f(165), factor: 0.1))],
+                      channels: rfxMeat(start: 38, k: 0.00009, stall: .init(bandCelsius: f(150)...f(165), factor: 0.1)),
                       battery: 92, batteryDrainPerHour: 1.5),
                 .init(serial: "RFX-RIBS", label: "Ribs", ambient: pit,
-                      channels: [.init(number: "1", role: .internal, label: "Tip", startCelsius: f(40), k: 0.00012)],
+                      channels: rfxMeat(start: 40, k: 0.00012),
                       battery: 14, batteryDrainPerHour: 1.5),
             ])
         case .brisketStall:

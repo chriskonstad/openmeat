@@ -176,11 +176,21 @@ struct LiveActivityStateTests {
         #expect(state.updatedAt == t0.addingTimeInterval(-940))
     }
 
-    @Test(arguments: [(EstimateState.stalled, "Stall"), (.warmingUp, "Calculating…"), (.reached, "Done")])
+    @Test(arguments: [(EstimateState.stalled, "Stall"), (.warmingUp, "Calculating…")])
     func statusText(_ estimateState: EstimateState, _ text: String) {
         let state = CookActivityAttributes.ContentState(snapshot: snapshot(Estimate(state: estimateState, eta: t0)), unit: .celsius)
         #expect(state.status == text)
         #expect(state.eta == nil)
+    }
+
+    @Test func reachedCountsUpFromWhenTargetWasFirstReached() {
+        // Samples: 5 °C at t0, 50 °C at t0+60. Target 40 °C → first reached at t0+60.
+        var snap = snapshot(Estimate(state: .reached, eta: t0.addingTimeInterval(60)), target: Temperature(celsius: 40).fahrenheit)
+        snap.cook.append(Sample(time: t0.addingTimeInterval(120), celsius: 52), to: meat)
+        let state = CookActivityAttributes.ContentState(snapshot: snap, unit: .celsius)
+        #expect(state.status == nil)
+        #expect(state.eta == nil)
+        #expect(state.targetReachedAt == t0.addingTimeInterval(60))
     }
 
     @Test func noTargetHasNoStatus() {
@@ -197,6 +207,13 @@ struct FormattingTests {
         #expect(Formatting.duration(8 * 60 + 5) == "8m")
         #expect(Formatting.duration(72 * 60) == "1h 12m")
         #expect(Formatting.duration(-5) == "0s")
+    }
+
+    @Test func stopwatchClock() {
+        #expect(Formatting.clock(5) == "0:05")
+        #expect(Formatting.clock(7 * 60 + 5) == "7:05")
+        #expect(Formatting.clock(3600 + 12 * 60 + 5) == "1:12:05")
+        #expect(Formatting.clock(-3) == "0:00")
     }
 
     @Test func elapsedAxisLabels() {

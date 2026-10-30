@@ -24,7 +24,11 @@ final class AppModel {
 
     let settings: AppSettings
     let channels: ChannelPreferences
-    let store: any CookStore
+    /// Real and demo cooks are stored apart, so simulated cooks never show up in (or get resumed from)
+    /// real history.
+    private let realStore: any CookStore
+    private let demoStore: any CookStore
+    var store: any CookStore { isDemo ? demoStore : realStore }
     let launch: LaunchConfiguration
     private let credentials: any CredentialStoring
     private let notificationCenter: any NotificationCenterClient
@@ -50,7 +54,8 @@ final class AppModel {
         self.notificationCenter = notificationCenter
         self.notifications = NotificationScheduler(center: notificationCenter)
         self.liveActivities = liveActivities
-        self.store = store ?? Self.defaultStore(reset: launch.reset)
+        self.realStore = store ?? Self.defaultStore(folder: "Cooks", reset: launch.reset)
+        self.demoStore = store ?? Self.defaultStore(folder: "DemoCooks", reset: true)
         if launch.reset {
             settings.reset()
             channels.reset()
@@ -68,8 +73,8 @@ final class AppModel {
         }
     }
 
-    private static func defaultStore(reset: Bool) -> any CookStore {
-        let dir = URL.applicationSupportDirectory.appending(path: "Cooks")
+    private static func defaultStore(folder: String, reset: Bool) -> any CookStore {
+        let dir = URL.applicationSupportDirectory.appending(path: folder)
         if reset { try? FileManager.default.removeItem(at: dir) }
         return (try? FileCookStore(directory: dir)) ?? InMemoryCookStore()
     }
@@ -81,7 +86,9 @@ final class AppModel {
         signInError = nil
         let credentials = credentials
         do {
-            let result = try await LiveThermoWorksService.signIn(email: email, password: password, onRefresh: { refreshed in
+            let result = try await LiveThermoWorksService.signIn(email: email, password: password,
+                                                                 http: RecordingHTTPClient(base: URLSessionHTTPClient()),
+                                                                 onRefresh: { refreshed in
                 // Persist rotated tokens.
                 if var stored = credentials.load() {
                     stored.credentials = refreshed
@@ -102,7 +109,8 @@ final class AppModel {
         let tokens = TokenManager(credentials: stored.credentials, authenticator: authenticator, onRefresh: { refreshed in
             credentials.save(StoredSession(credentials: refreshed, project: stored.project))
         })
-        becomeReady(service: LiveThermoWorksService(project: stored.project, tokens: tokens, http: URLSessionHTTPClient()),
+        becomeReady(service: LiveThermoWorksService(project: stored.project, tokens: tokens,
+                                                    http: RecordingHTTPClient(base: URLSessionHTTPClient())),
                     timeSource: SystemTimeSource(), scale: 1, demo: false)
     }
 
@@ -124,7 +132,11 @@ final class AppModel {
         if demo {
             liveActivities.reconcile(activeCookID: nil)
         } else {
-            Task { await resumeUnfinishedCook() }
+            Task {
+                await resumeUnfinishedCook()
+                // Capture the real device/channel layout for diagnostics (SPEC §3.3).
+                _ = try? await discover()
+            }
         }
     }
 

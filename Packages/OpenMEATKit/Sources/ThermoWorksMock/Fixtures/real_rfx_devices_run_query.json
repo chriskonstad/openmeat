@@ -1,0 +1,223 @@
+[
+ {
+  "document": {
+   "name": "projects/tw-test/databases/(default)/documents/devices/AA:BB:CC:00:00:01",
+   "fields": {
+    "serial": {
+     "stringValue": "AA:BB:CC:00:00:01"
+    },
+    "device": {
+     "stringValue": "rfx gateway"
+    },
+    "firmware": {
+     "stringValue": "1.2.3-47"
+    },
+    "lastPurged": {
+     "timestampValue": "2026-04-15T06:37:21.969Z"
+    },
+    "exportVersion": {
+     "doubleValue": 0.5
+    },
+    "deviceId": {
+     "stringValue": "AA:BB:CC:00:00:01"
+    },
+    "deviceDisplayUnits": {
+     "stringValue": "F"
+    },
+    "status": {
+     "stringValue": "NORMAL"
+    },
+    "batteryState": {
+     "stringValue": "discharging"
+    },
+    "label": {
+     "stringValue": "RFX GATEWAY"
+    },
+    "fan": {
+     "mapValue": {
+      "fields": {
+       "fan_channel": {
+        "stringValue": "1"
+       },
+       "connected": {
+        "booleanValue": false
+       },
+       "connection": {
+        "booleanValue": false
+       },
+       "state": {
+        "integerValue": "0"
+       },
+       "setTemp": {
+        "integerValue": "225"
+       }
+      }
+     }
+    },
+    "type": {
+     "stringValue": "rfx"
+    },
+    "iotCoreDeviceBlocked": {
+     "booleanValue": false
+    },
+    "pendingLoad": {
+     "booleanValue": false
+    },
+    "notes": {
+     "stringValue": ""
+    },
+    "public": {
+     "booleanValue": false
+    },
+    "sessionLabel": {
+     "stringValue": ""
+    },
+    "sessionStart": {
+     "timestampValue": "2026-10-29T22:57:38.730Z"
+    },
+    "lastArchive": {
+     "timestampValue": "2026-10-29T22:57:44.152Z"
+    },
+    "lastBluetoothConnection": {
+     "timestampValue": "2026-10-29T22:57:46.014Z"
+    },
+    "transmitIntervalInSeconds": {
+     "integerValue": "30"
+    },
+    "wifi_stength": {
+     "integerValue": "-65"
+    },
+    "battery": {
+     "integerValue": "60"
+    },
+    "latestReading": {
+     "timestampValue": "2026-10-30T15:20:32.063Z"
+    },
+    "lastSeen": {
+     "timestampValue": "2026-10-30T15:20:33.090Z"
+    },
+    "lastTelemetrySaved": {
+     "timestampValue": "2026-10-30T15:20:32.063Z"
+    },
+    "lastWifiConnection": {
+     "timestampValue": "2026-10-30T15:20:33.090Z"
+    },
+    "accountId": {
+     "stringValue": "test-account"
+    }
+   },
+   "createTime": "2026-04-15T06:37:21.893074Z",
+   "updateTime": "2026-10-30T15:20:33.218473Z"
+  },
+  "readTime": "2026-10-30T15:20:38.313838Z"
+ },
+ {
+  "document": {
+   "name": "projects/tw-test/databases/(default)/documents/devices/M100000001",
+   "fields": {
+    "batteryState": {
+     "stringValue": "discharging"
+    },
+    "pendingLoad": {
+     "booleanValue": false
+    },
+    "serial": {
+     "stringValue": "M100000001"
+    },
+    "battery": {
+     "integerValue": "100"
+    },
+    "status": {
+     "stringValue": "NORMAL"
+    },
+    "lastPurged": {
+     "timestampValue": "2026-05-05T06:49:16.281Z"
+    },
+    "exportVersion": {
+     "doubleValue": 0.5
+    },
+    "type": {
+     "stringValue": "rfx"
+    },
+    "device": {
+     "stringValue": "rfx meat"
+    },
+    "notes": {
+     "stringValue": ""
+    },
+    "public": {
+     "booleanValue": false
+    },
+    "sessionLabel": {
+     "stringValue": ""
+    },
+    "iotCoreDeviceBlocked": {
+     "booleanValue": false
+    },
+    "gatewaySwitchLastAt": {
+     "timestampValue": "2026-10-29T23:02:00.722Z"
+    },
+    "sessionStart": {
+     "timestampValue": "2026-10-29T23:02:00.477Z"
+    },
+    "lastArchive": {
+     "timestampValue": "2026-10-29T23:02:03.352Z"
+    },
+    "heartbeatInterval": {
+     "integerValue": "60"
+    },
+    "transmitIntervalInSeconds": {
+     "integerValue": "60"
+    },
+    "readInterval": {
+     "integerValue": "3"
+    },
+    "showSensorChannels": {
+     "booleanValue": false
+    },
+    "searModeEnabled": {
+     "booleanValue": false
+    },
+    "temperatureDeltaTrigger": {
+     "doubleValue": 1.5
+    },
+    "deviceDisplayUnits": {
+     "stringValue": "F"
+    },
+    "label": {
+     "stringValue": "RFX MEAT"
+    },
+    "ringColors": {
+     "arrayValue": {}
+    },
+    "latestReading": {
+     "timestampValue": "2026-10-29T23:03:25.575Z"
+    },
+    "lastSeen": {
+     "timestampValue": "2026-10-29T23:03:25.910Z"
+    },
+    "gatewayRSSI": {
+     "integerValue": "-33"
+    },
+    "lastTelemetrySaved": {
+     "timestampValue": "2026-10-29T23:03:25.575Z"
+    },
+    "gatewayLastSeen": {
+     "timestampValue": "2026-10-29T23:03:25.830Z"
+    },
+    "lastWifiConnection": {
+     "timestampValue": "2026-10-29T23:03:25.910Z"
+    },
+    "lastPacketId": {
+     "integerValue": "1"
+    },
+    "accountId": {
+     "stringValue": "test-account"
+    }
+   },
+   "createTime": "2026-05-05T06:49:16.215579Z",
+   "updateTime": "2026-10-29T23:03:26.245518Z"
+  },
+  "readTime": "2026-10-30T15:20:38.313838Z"
+ }
+]

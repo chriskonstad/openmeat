@@ -24,7 +24,7 @@ enum ChartSeriesBuilder {
     /// point either side so lines run to the edges).
     static func series(for cook: Cook, unit: TemperatureUnit, hidden: Set<ChannelKey> = [],
                        window: ClosedRange<Date>? = nil, maxPointsPerSeries: Int = 600) -> [ChartSeries] {
-        cook.probes.filter { !hidden.contains($0.key) }.map { probe in
+        cook.visibleProbes.filter { !hidden.contains($0.key) }.map { probe in
             var samples = cook.series[probe.key] ?? []
             if let window {
                 let lower = samples.lastIndex { $0.time < window.lowerBound } ?? samples.startIndex

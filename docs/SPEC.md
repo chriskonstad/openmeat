@@ -34,7 +34,7 @@ or gateway configuration — use the official app for that.
 | Flow | Description |
 | --- | --- |
 | **Sign in** | Email + password for ThermoWorks Cloud. Credentials → Keychain; tokens refreshed automatically. "Demo mode" uses the mock API (also used by UI tests and App Review). |
-| **Start a cook** | Live screen lists all online probes grouped by device, with each device's battery (probes, gateway) and a low-battery warning; wired ambient sensors appear under the gateway. "Start cook" → pick which probes/channels belong to this cook, set each sensor's role (meat / ambient) and name — **remembered per channel for next time** — optional title → recording begins. Roles and names can also be changed mid-cook (long-press a card). |
+| **Start a cook** | Mirrors the hardware: the gateway (online/signal/battery) with its wired sensors, then each wireless probe as one row — include checkbox, name, battery (yellow-orange < 50 %, red < 20 %), connection + signal, core temp, and "Show all 4 sensors". Offline probes default to excluded. "Start cook" → pick which probes/channels belong to this cook, set each sensor's role (meat / ambient) and name — **remembered per channel for next time** — optional title → recording begins. Roles and names can also be changed mid-cook (long-press a card). |
 | **Set target** | Tap a probe card's target chip → wheel/stepper + preset list → done. Target line appears on the graph immediately; ETA starts computing. |
 | **Watch** | Live screen: probe cards (current temp, target, ETA, trend arrow, ambient) on top, interactive chart below, note bar at the bottom. |
 | **Add a note** | Tap a quick-note chip or "+" for free text. The note is time-stamped "now" (editable time) and drawn as a marker on the chart. |
@@ -89,19 +89,24 @@ values, kept in `ThermoWorksConfiguration` so they can be overridden.
   `timestampValue`, `mapValue.fields`, `arrayValue.values`, `nullValue`). Our decoder must
   accept either numeric representation and ignore unknown fields.
 
-### 3.3 Unknowns to resolve against a real account (Milestone 0)
-1. **RFX channel layout**: which channel numbers/`type` values are the internal sensors vs. the
-   ambient sensor of an RFX Meat probe. Until confirmed, `ChannelRoleClassifier` uses `type`/`label`
-   heuristics and the user can override a channel's role.
-2. **Update cadence**: how often RFX channel docs update (`transmitIntervalInSeconds`?). Drives polling interval.
-3. **History backfill**: does the web client fetch a live session's history (graph) from an endpoint
-   we can call? If yes, we backfill gaps when the app was suspended. If no, gaps remain gaps (drawn as breaks).
-4. **Firestore `listen`** (streaming) viability over REST/WebChannel — would replace polling.
-5. **Gateway and batteries**: confirmed so far — the gateway is on Wi-Fi with no local API (all TCP
-   ports closed, nothing advertised over mDNS; outbound to the cloud only). Still to confirm in the cloud data: whether the
-   gateway is its own `devices` document (we match `gateway` in model/type/label), whether wired ambient
-   sensors are channels on it, and whether `battery` is a percent for probes and the gateway.
-6. Rate limits / ToS sensitivities. Keep polling polite (default 15 s, min 5 s, back off on errors).
+### 3.3 Real RFX data (captured 2026-10-30; sanitized fixtures `real_rfx_*.json`)
+
+Confirmed against a real account (gateway + one RFX MEAT):
+- **Gateway** is its own device: `device: "rfx gateway"`, `battery` (percent, integer), `batteryState`
+  ("discharging"), `wifi_stength` (sic, dBm), `transmitIntervalInSeconds: 30`. Its channel 1 is the
+  wired port (`type: "Pro-Series"`), used as the ambient/pit sensor. On Wi-Fi the gateway has **no
+  local API** (all TCP ports closed, nothing on mDNS); it only talks out to the cloud.
+- **RFX MEAT** is a device (`device: "rfx meat"`, `gatewayRSSI` dBm, `battery`, `transmitIntervalInSeconds: 60`,
+  `showSensorChannels`). Channel **0** has `type: "computed"`: the **core = the coldest sensor**. Channels
+  **1–4** are `type: "rfx meat sensor"`. The probe has no ambient sensor.
+- Unset labels arrive as `""`.
+- Channel 0 also carries `recentReadings` (last ~10 `{ts, v, u}`), `rateOfChange`, and ThermoWorks' own
+  `estimatedAlarmTime`. Future use: backfill short gaps after suspension; compare ETAs.
+
+Still open:
+1. **Live-session history backfill** beyond `recentReadings`.
+2. **Firestore `listen`** (streaming) viability over REST/WebChannel — would replace polling.
+3. Rate limits / ToS sensitivities. Keep polling polite (default 15 s, min 5 s, back off on errors).
 
 Milestone 0 deliverable: a `capture` debug command that dumps sanitized device/channel JSON into
 `Packages/OpenMEATKit/Tests/Fixtures/` so tests run against real shapes.

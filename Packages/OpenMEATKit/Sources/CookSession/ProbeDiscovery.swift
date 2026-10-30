@@ -53,45 +53,67 @@ public enum ProbeDiscovery {
         }
     }
 
-    /// Builds cook probes from discovered devices, applying the user's remembered customizations,
-    /// then pairing each internal sensor with an ambient sensor and assigning colors.
+    /// Builds cook probes from discovered devices (docs/SPEC.md §3.2):
+    /// - a multi-sensor probe (RFX MEAT) becomes one meat probe whose value is its `computed` core
+    ///   channel (the coldest sensor), plus hidden `.sensor` entries for each sensor along the shaft;
+    /// - sensors wired into the gateway default to ambient;
+    /// - anything else falls back to per-channel classification.
+    /// Then remembered customizations are applied and probes are paired with an ambient and colored.
     public static func probes(from devices: [DiscoveredDevice],
                               customizations: [ChannelKey: ProbeCustomization] = [:]) -> [CookProbe] {
         var probes: [CookProbe] = []
         for discovered in devices {
+            let device = discovered.device
+            let deviceLabel = device.label ?? device.serial
             let temperatureChannels = discovered.channels.filter { TemperatureUnit(code: $0.units) != nil }
-            let roles = Dictionary(uniqueKeysWithValues: temperatureChannels.map {
-                ($0.key, customizations[$0.key]?.role ?? ChannelRoleClassifier.role(of: $0))
+            func customLabel(_ key: ChannelKey) -> String? {
+                customizations[key]?.label?.trimmingCharacters(in: .whitespacesAndNewlines).nilIfEmpty
+            }
+
+            if let core = temperatureChannels.first(where: \.isComputed) {
+                let custom = customizations[core.key]
+                probes.append(CookProbe(key: core.key, label: customLabel(core.key) ?? deviceLabel,
+                                        role: custom?.role ?? .internal, showsSensors: custom?.showsSensors ?? false))
+                for (index, sensor) in temperatureChannels.filter(\.isProbeSensor).enumerated() {
+                    probes.append(CookProbe(key: sensor.key, label: sensor.label ?? "Sensor \(index + 1)",
+                                            role: .sensor, parent: core.key))
+                }
+                continue
+            }
+
+            let roles = Dictionary(uniqueKeysWithValues: temperatureChannels.map { channel in
+                let automatic: ProbeRole = device.isGateway ? .ambient : ChannelRoleClassifier.role(of: channel)
+                return (channel.key, customizations[channel.key]?.role ?? automatic)
             })
-            let deviceLabel = discovered.device.label ?? discovered.device.serial
             let internalCount = roles.values.filter { $0 == .internal }.count
             for channel in temperatureChannels {
                 let role = roles[channel.key] ?? .internal
+                let numbered = temperatureChannels.count > 1
                 let automatic: String = switch role {
                 // Wired into the gateway: name the sensor, not the gateway.
-                case .ambient where discovered.device.isGateway:
-                    temperatureChannels.count > 1 ? "Ambient \(channel.ref.number)" : "Ambient"
+                case .ambient where device.isGateway: numbered ? "Ambient \(channel.ref.number)" : "Ambient"
+                case .internal where device.isGateway: "Probe \(channel.ref.number)"
                 case .ambient: "\(deviceLabel) Ambient"
                 case .internal where internalCount > 1: channel.label ?? "\(deviceLabel) \(channel.ref.number)"
                 default: deviceLabel
                 }
-                let custom = customizations[channel.key]?.label?.trimmingCharacters(in: .whitespacesAndNewlines)
-                probes.append(CookProbe(key: channel.key, label: custom.flatMap { $0.isEmpty ? nil : $0 } ?? automatic, role: role))
+                probes.append(CookProbe(key: channel.key, label: customLabel(channel.key) ?? automatic, role: role))
             }
         }
         return pairAndColor(probes)
     }
 
-    /// Pairs each internal probe with an ambient sensor (same device first, else any ambient in the cook —
-    /// the pit is usually shared) and assigns colors: one per internal probe, in order; an ambient
-    /// shares the color of the first internal probe it serves.
+    /// Pairs each meat probe with an ambient sensor (same device first, else any ambient in the cook —
+    /// the pit is usually shared) and assigns colors: one per meat probe, in order. Sensors share their
+    /// probe's color. An ambient takes its probe's color only if it serves exactly one probe; one
+    /// shared by several probes (e.g. wired into the gateway) is neutral.
     ///
     /// With `preservingColorsOf`, probes keep their existing colors (so a mid-cook role change never
     /// repaints the other series) and only newly-internal probes get a fresh color.
     public static func pairAndColor(_ input: [CookProbe], preservingColorsOf existing: [CookProbe]? = nil) -> [CookProbe] {
         var probes = input
         let ambients = probes.filter { $0.role == .ambient }
-        var nextColor = (existing?.map(\.colorIndex).max()).map { $0 + 1 } ?? 0
+        var nextColor = (existing?.map(\.colorIndex).max()).map { max($0 + 1, 0) } ?? 0
         for i in probes.indices {
             probes[i].pairedAmbient = nil
             guard probes[i].role == .internal else { continue }
@@ -105,9 +127,16 @@ public enum ProbeDiscovery {
             }
         }
         for i in probes.indices where probes[i].role != .internal {
-            let served = probes.first { $0.role == .internal && $0.pairedAmbient == probes[i].key }
-            if let served {
-                probes[i].colorIndex = served.colorIndex
+            if probes[i].role == .sensor, let parent = probes[i].parent,
+               let owner = probes.first(where: { $0.key == parent }) {
+                probes[i].colorIndex = owner.colorIndex
+                continue
+            }
+            let served = probes.filter { $0.role == .internal && $0.pairedAmbient == probes[i].key }
+            if served.count == 1 {
+                probes[i].colorIndex = served[0].colorIndex
+            } else if !served.isEmpty || probes[i].role == .ambient {
+                probes[i].colorIndex = CookProbe.neutralColor
             } else {
                 probes[i].colorIndex = nextColor
                 nextColor += 1
@@ -125,10 +154,17 @@ public struct ProbeCustomization: Codable, Hashable, Sendable {
     public var label: String?
     /// nil = included by default.
     public var isIncluded: Bool?
+    /// Multi-sensor probes: show every sensor, not just the core. nil = off.
+    public var showsSensors: Bool?
 
-    public init(role: ProbeRole? = nil, label: String? = nil, isIncluded: Bool? = nil) {
+    public init(role: ProbeRole? = nil, label: String? = nil, isIncluded: Bool? = nil, showsSensors: Bool? = nil) {
         self.role = role
         self.label = label
         self.isIncluded = isIncluded
+        self.showsSensors = showsSensors
     }
+}
+
+extension String {
+    var nilIfEmpty: String? { isEmpty ? nil : self }
 }

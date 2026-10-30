@@ -65,6 +65,10 @@ final class LiveCookModel {
         Task { await session.setRole(role, for: key) }
     }
 
+    func setShowsSensors(_ shows: Bool, for key: ChannelKey) {
+        Task { await session.setShowsSensors(shows, for: key) }
+    }
+
     func setLabel(_ label: String, for key: ChannelKey) {
         Task { await session.setLabel(label, for: key) }
     }
