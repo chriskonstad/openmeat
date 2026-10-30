@@ -73,6 +73,15 @@ final class AppModel {
         }
     }
 
+    /// Debug builds record raw ThermoWorks responses locally (Diagnostics); release builds don't.
+    private static func makeHTTPClient() -> any HTTPClient {
+        #if DEBUG
+        RecordingHTTPClient(base: URLSessionHTTPClient())
+        #else
+        URLSessionHTTPClient()
+        #endif
+    }
+
     private static func defaultStore(folder: String, reset: Bool) -> any CookStore {
         let dir = URL.applicationSupportDirectory.appending(path: folder)
         if reset { try? FileManager.default.removeItem(at: dir) }
@@ -87,7 +96,7 @@ final class AppModel {
         let credentials = credentials
         do {
             let result = try await LiveThermoWorksService.signIn(email: email, password: password,
-                                                                 http: RecordingHTTPClient(base: URLSessionHTTPClient()),
+                                                                 http: Self.makeHTTPClient(),
                                                                  onRefresh: { refreshed in
                 // Persist rotated tokens.
                 if var stored = credentials.load() {
@@ -110,7 +119,7 @@ final class AppModel {
             credentials.save(StoredSession(credentials: refreshed, project: stored.project))
         })
         becomeReady(service: LiveThermoWorksService(project: stored.project, tokens: tokens,
-                                                    http: RecordingHTTPClient(base: URLSessionHTTPClient())),
+                                                    http: Self.makeHTTPClient()),
                     timeSource: SystemTimeSource(), scale: 1, demo: false)
     }
 

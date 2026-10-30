@@ -34,6 +34,7 @@
 		A3F9FA9C0FD8D212243D4B07 /* CredentialStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = F1C7218E2217FCB95EFCEDD6 /* CredentialStore.swift */; };
 		A6ECF66506383019545C497B /* HistoryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 29949D5BAB287960E1E58DD8 /* HistoryView.swift */; };
 		A758A3AFBD81667A9ED8E898 /* ChartAndActivityTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F65C1C7FE7379AEC3D11CD6 /* ChartAndActivityTests.swift */; };
+		A87A3A6E6BDFC1050085627E /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = 077B55D5EE8645FDC5377A50 /* PrivacyInfo.xcprivacy */; };
 		AC2F2F100F4C5884A90B91B1 /* LaunchConfigurationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C5A2AA0C887BE8891F82C3EC /* LaunchConfigurationTests.swift */; };
 		BBAF94F480C2BC7232C7454B /* OpenMEATUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 39F9256AC369D4647C4757BF /* OpenMEATUITests.swift */; };
 		BC6E2A5FCA72F13290FBF7D2 /* AppModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 63028BBB8D4A0EA5A4317492 /* AppModel.swift */; };
@@ -92,6 +93,7 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		077B55D5EE8645FDC5377A50 /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
 		12F3D162F0DD713BCC88FE32 /* OpenMEAT.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = OpenMEAT.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		1430083D5D20600FA2D9E76D /* NotesSection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotesSection.swift; sourceTree = "<group>"; };
 		15839E554D055B40492C2BBD /* OpenMEATUITests.xctest */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.cfbundle; path = OpenMEATUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -214,6 +216,7 @@
 			isa = PBXGroup;
 			children = (
 				4C8D76467605CE4AAEF228F5 /* Assets.xcassets */,
+				077B55D5EE8645FDC5377A50 /* PrivacyInfo.xcprivacy */,
 			);
 			path = Resources;
 			sourceTree = "<group>";
@@ -513,6 +516,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				46374FF7476C5C6B3E12CA78 /* Assets.xcassets in Resources */,
+				A87A3A6E6BDFC1050085627E /* PrivacyInfo.xcprivacy in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
